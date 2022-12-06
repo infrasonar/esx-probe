@@ -16,3 +16,7 @@ class AssetCache:
     def set_value(cls, key, val, max_age=None):
         expire_ts = time.time() + max_age if max_age else None
         cls._all[key] = (val, expire_ts)
+
+    @classmethod
+    def drop(cls, key):
+        cls._all.pop(key, None)

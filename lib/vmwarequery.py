@@ -7,7 +7,7 @@ from libprobe.exceptions import CheckException, IgnoreCheckException, \
 from pyVmomi import vim  # type: ignore
 from typing import List
 
-from .vmwareconn import get_data
+from .vmwareconn import get_data, drop_connnection
 
 
 async def vmwarequery(
@@ -42,9 +42,13 @@ async def vmwarequery(
         raise IgnoreResultException
     except (IOError,
             BadStatusLine,
-            ConnectionError,
-            Exception) as e:
+            ConnectionError) as e:
         msg = str(e) or e.__class__.__name__
+        drop_connnection(address)
+        raise CheckException(msg)
+    except Exception as e:
+        msg = str(e) or e.__class__.__name__
+        logging.exception(msg)
         raise CheckException(msg)
     else:
         return result

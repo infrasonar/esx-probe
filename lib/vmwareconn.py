@@ -19,6 +19,13 @@ def get_data(ip4, username, password, obj_type, properties):
     return data
 
 
+def drop_connnection(host):
+    conn, _ = AssetCache.get_value((host, 'connection'))
+    if conn:
+        AssetCache.drop((host, 'connection'))
+        conn._stub.DropConnections()
+
+
 def _get_content(host, username, password):
     conn, expired = AssetCache.get_value((host, 'connection'))
     if expired:
