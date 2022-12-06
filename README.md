@@ -19,4 +19,3 @@ Variable          | Default                        | Description
 ```
 docker build -t vmware-probe . --no-cache
 ```
-# vmware-probe
