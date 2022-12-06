@@ -1,5 +1,6 @@
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
+from ..utils import datetime_to_timestamp
 from ..vmwarequery import vmwarequery
 
 
@@ -23,10 +24,10 @@ async def check_alarms(
             'alarmDesc': alarm.alarm.info.description,
             'acknowledged': alarm.acknowledged,
             'acknowledgedByUser': alarm.acknowledgedByUser,
-            'acknowledgedTime': alarm.acknowledgedTime,  # TODO datetime?
+            'acknowledgedTime': datetime_to_timestamp(alarm.acknowledgedTime),
             'eventKey': alarm.eventKey,
             'overallStatus': alarm.overallStatus,
-            'time': alarm.time,  # TODO datetime?
+            'time': datetime_to_timestamp(alarm.time),
         }
         for item in result
         for prop in item.propSet

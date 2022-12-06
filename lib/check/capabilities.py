@@ -18,7 +18,7 @@ async def check_capabilities(
     capabilities = [
         {
             'name': name,
-            'value': getattr(prop.val, name)
+            'capability': getattr(prop.val, name)
         }
         for item in result
         for prop in item.propSet

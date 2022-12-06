@@ -18,14 +18,14 @@ async def check_pci(
     pcis = [
         {
             'name': prop_val.id,  # str
-            'classId': prop_val.classId,
-            'deviceId': prop_val.deviceId,
-            'deviceName': prop_val.deviceName,
-            'parentBridge': prop_val.parentBridge,
-            'subDeviceId': prop_val.subDeviceId,
-            'subVendorId': prop_val.subVendorId,
-            'vendorId': prop_val.vendorId,
-            'vendorName': prop_val.vendorName,
+            'classId': prop_val.classId,  # int
+            'deviceId': prop_val.deviceId,  # int
+            'deviceName': prop_val.deviceName,  # str
+            'parentBridge': prop_val.parentBridge,  # str/null
+            'subDeviceId': prop_val.subDeviceId,  # int
+            'subVendorId': prop_val.subVendorId,  # int
+            'vendorId': prop_val.vendorId,  # int
+            'vendorName': prop_val.vendorName,  # str
         }
         for item in result
         for prop in item.propSet

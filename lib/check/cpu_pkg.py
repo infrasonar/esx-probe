@@ -18,10 +18,11 @@ async def check_cpu_pkg(
     cpus = [
         {
             'name': str(prop_val.index),
-            'busHz': prop_val.busHz,
-            'description': prop_val.description,
-            'hz': prop_val.hz,
-            'vendor': prop_val.vendor,
+            'busHz': prop_val.busHz,  # int
+            'description': prop_val.description,  # str
+            'hz': prop_val.hz,  # int
+            'index': prop_val.index,  # int
+            'vendor': prop_val.vendor,  # str
         }
         for item in result
         for prop in item.propSet

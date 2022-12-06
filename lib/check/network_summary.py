@@ -17,10 +17,10 @@ async def check_network_summary(
 
     networks = [
         {
-            'name': prop.val.name,
-            'accessible': prop.val.accessible,
-            'ipPoolId': prop.val.ipPoolId,
-            'ipPoolName': prop.val.ipPoolName,
+            'name': prop.val.name,  # str
+            'accessible': prop.val.accessible,  # bool
+            'ipPoolId': prop.val.ipPoolId,  # int/null
+            'ipPoolName': prop.val.ipPoolName,  # str
         }
         for item in result
         for prop in item.propSet

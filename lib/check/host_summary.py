@@ -34,9 +34,9 @@ def on_runtime_info(obj):
         'cryptoState': obj.cryptoState,  # str
         'hostMaxVirtualDiskCapacity': obj.hostMaxVirtualDiskCapacity,  # int
         'inMaintenanceMode': obj.inMaintenanceMode,  # bool
-        'inQuarantineMode': obj.inQuarantineMode,  # bool
+        'inQuarantineMode': obj.inQuarantineMode,  # bool/null
         'powerState': obj.powerState,  # str
-        'standbyMode': obj.standbyMode,  # str
+        'standbyMode': obj.standbyMode,  # str/null
     }
 
 
@@ -44,9 +44,9 @@ def on_quick_stats(obj):
     # vim.host.Summary.QuickStats
     return {
         'name': 'quickStats',
-        'availablePMemCapacity': obj.availablePMemCapacity,  # int
-        'distributedCpuFairness': obj.distributedCpuFairness,  # int
-        'distributedMemoryFairness': obj.distributedMemoryFairness,  # int
+        'availablePMemCapacity': obj.availablePMemCapacity,  # int/null
+        'distributedCpuFairness': obj.distributedCpuFairness,  # int/null
+        'distributedMemoryFairness': obj.distributedMemoryFairness,  # int/null
         'overallCpuUsage': obj.overallCpuUsage,  # int
         'overallMemoryUsage': obj.overallMemoryUsage,  # int
         'uptime': obj.uptime,  # int
@@ -77,7 +77,7 @@ def on_config_summary(obj):
         'name': obj.name,
         'faultToleranceEnabled': obj.faultToleranceEnabled,  # bool
         'port': obj.port,  # int
-        'sslThumbprint': obj.sslThumbprint,  # int
+        'sslThumbprint': obj.sslThumbprint,  # int/null
         'vmotionEnabled': obj.vmotionEnabled,  # int
     }
 
@@ -86,15 +86,16 @@ def fmt_summary(summary) -> dict:
     output = {}
     output['quickStats'] = [on_quick_stats(summary.quickStats)]
 
-    output['hardwareOther'] = [
-        {
-            **{
-                item.identifierType.key: item.identifierValue
-                for item in summary.hardware.otherIdentifyingInfo
-            },
-            'name': 'hardwareOther',
-        }
-    ]
+    # TODO
+    # output['hardwareOther'] = [
+    #     {
+    #         **{
+    #             item.identifierType.key: item.identifierValue
+    #             for item in summary.hardware.otherIdentifyingInfo
+    #         },
+    #         'name': 'hardwareOther',
+    #     }
+    # ]
     output['hardware'] = [on_hardware_summary(summary.hardware)]
     output['feature'] = [
         {

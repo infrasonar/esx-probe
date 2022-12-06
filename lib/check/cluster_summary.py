@@ -29,7 +29,7 @@ def on_config_summary(obj):
         **on_about_info(obj.product),
         'faultToleranceEnabled': obj.faultToleranceEnabled,  # bool
         'port': obj.port,  # int
-        'sslThumbprint': obj.sslThumbprint,  # int
+        'sslThumbprint': obj.sslThumbprint,  # int/null
         'vmotionEnabled': obj.vmotionEnabled,  # int
     }
 
@@ -81,7 +81,7 @@ async def check_cluster_summary(
     hosts_lookup = {
         h.obj: {p.name: p.val for p in h.propSet} for h in hosts_}
     summary = []
-    hosts = {}
+    hosts = []
 
     for moref, cluster in clusters_lookup.items():
         cluster_name = f'{moref.parent.parent.name}-{moref.name}'
