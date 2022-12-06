@@ -36,27 +36,28 @@ async def vmwarequery(
         raise
     except BadStatusLine:
         msg = 'Vmware is shutting down'
-        # cls.tryDropVmwareConnection()
-        raise CheckException(f'Check error: {e.__class__.__name__}: {msg}')
+        # TODO cls.tryDropVmwareConnection()
+        raise CheckException(msg)
     except (vim.fault.InvalidLogin,
             vim.fault.NotAuthenticated,
             IOError,
             ConnectionError) as e:
-        msg = str(e)
+        msg = str(e) or e.__class__.__name__
         if (
             'Cannot complete login due to an incorrect user name or'
             ' password'
         ) in msg:
-            msg = (
-                'Cannot complete login due to an incorrect user name'
-                ' or password')
+            logging.warning('Cannot complete login due to an incorrect user'
+                            ' name or password.')
+            raise IgnoreResultException
         elif 'The session is not authenticated.' in msg:
             # drop the rest of the ugly message
-            msg = 'The session is not authenticated.'
-        # cls.tryDropVmwareConnection()
-        raise CheckException(f'Check error: {e.__class__.__name__}: {msg}')
+            logging.warning('The session is not authenticated.')
+            raise IgnoreResultException
+        # TODO cls.tryDropVmwareConnection()
+        raise CheckException(msg)
     except (vim.fault.HostConnectFault, Exception) as e:
-        msg = str(e)
+        msg = str(e) or e.__class__.__name__
         if '503 Service Unavailable' in msg:
             msg = (
                 '503 Service Unavailable'
@@ -65,8 +66,8 @@ async def vmwarequery(
                 'language=en_US&cmd=displayKC&externalId=2033822'
             )
         else:
-            logging.warning('Unhandled check error {}'.format(msg))
-        # cls.tryDropVmwareConnection()
-        raise CheckException(f'Check error: {e.__class__.__name__}: {msg}')
+            logging.warning(f'Unhandled check error {msg}')
+        # TODO cls.tryDropVmwareConnection()
+        raise CheckException(msg)
     else:
         return result

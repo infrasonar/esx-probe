@@ -114,7 +114,7 @@ async def check_host_vms(
                         guest_check['dns'][stack_fqdn] = dns
                         for idx, ip in enumerate(
                                 ip_stack.dnsConfig.ipAddress):
-                            dns['dnsIp{}'.format(idx + 1)] = ip
+                            dns[f'dnsIp{idx + 1}'] = ip
 
             if vm['guest'].ipAddress:
                 lookup_info['ip4'] = vm['guest'].ipAddress
@@ -210,12 +210,16 @@ async def check_host_vms(
             guest_check['config'] = {instance_uuid: cfg_dct}
             guest_configs.append(cfg_dct)
         except Exception:
+            # TODO waarom is deze try catch?
             logging.exception('')
 
-    guest_count = {'name': 'guestCount', 'guestCount': len(guests),
-                   'runningGuestCount': sum(
-        1 for guest in guests
-        if guest.get('guestState') == 'running')}
+    guest_count = {
+        'name': 'guestCount',
+        'guestCount': len(guests),
+        'runningGuestCount': sum(
+            guest.get('guestState') == 'running'
+            for guest in guests)
+    }
 
     # TODO waarom is dit < 0?
     for ds in virtual_storage_capacities.values():

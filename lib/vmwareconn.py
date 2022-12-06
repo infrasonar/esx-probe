@@ -34,7 +34,7 @@ def _get_content(host, username, password):
 
 
 def _get_connection(host, username, password):
-    logging.info('CONNECTING to {}'.format(host))
+    logging.info(f'CONNECTING to {host}')
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     context.verify_mode = ssl.CERT_NONE
     return connect.SmartConnect(

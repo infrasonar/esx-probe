@@ -31,9 +31,7 @@ async def check_cluster_summary(
     hosts = {}
 
     for moref, cluster in clusters_lookup.items():
-        cluster_name = '{}-{}'.format(
-            moref.parent.parent.name,
-            moref.name)
+        cluster_name = f'{moref.parent.parent.name}-{moref.name}'
 
         dct = prop_val_to_dict(cluster['summary'], item_name=cluster_name)
         summary[cluster_name] = dct
