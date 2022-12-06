@@ -19,25 +19,6 @@ def datetime_to_timestamp(inp):
     return calendar.timegm(inp.timetuple())
 
 
-def dyn_property_list_to_kv_list(lst):
-    lst_out = []
-    for feature in lst:
-        lst_out.append({
-            'name': feature.key,
-            'value': feature.value
-        })
-    return lst_out
-
-
-def dyn_property_list_to_dict(lst, item_name=None):
-    dct = {}
-    for item in lst:
-        dct[item.identifierType.key] = item.identifierValue
-    if item_name:
-        dct['name'] = item_name
-    return dct
-
-
 def prop_val_to_dict(prop_val, item_name=None):
     dct = {}
     for name, info in prop_val._propInfo.items():
