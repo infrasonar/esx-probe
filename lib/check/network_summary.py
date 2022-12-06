@@ -1,6 +1,5 @@
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
-from ..utils import prop_val_to_dict
 from ..vmwarequery import vmwarequery
 
 
@@ -17,7 +16,12 @@ async def check_network_summary(
     )
 
     networks = [
-        prop_val_to_dict(prop.val)
+        {
+            'name': prop.val.name,
+            'accessible': prop.val.accessible,
+            'ipPoolId': prop.val.ipPoolId,
+            'ipPoolName': prop.val.ipPoolName,
+        }
         for item in result
         for prop in item.propSet
     ]

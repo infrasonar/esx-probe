@@ -1,6 +1,5 @@
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
-from ..utils import prop_val_to_dict
 from ..vmwarequery import vmwarequery
 
 
@@ -18,11 +17,15 @@ async def check_sensor_info(
 
     sensors = [
         {
-            **prop_val_to_dict(prop_val),
             'name': prop_val.name,
             'healthState': prop_val.healthState.key,
             'readingValue': prop_val.currentReading * (
                 10 ** prop_val.unitModifier),
+            'baseUnits': prop_val.baseUnits,
+            'currentReading': prop_val.currentReading,
+            'rateUnits': prop_val.rateUnits,
+            'sensorType': prop_val.sensorType,
+            'unitModifier': prop_val.unitModifier,
         }
         for item in result
         for prop in item.propSet

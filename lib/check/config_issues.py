@@ -1,12 +1,12 @@
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
-from ..utils import prop_val_to_dict, datetime_to_timestamp
+from ..utils import datetime_to_timestamp
 from ..vmwarequery import vmwarequery
 
 
 # TODO andere itemnaam functie?
 def fmt_issue(issue) -> dict:
-    dct = prop_val_to_dict(issue)
+    dct = {}  # TODO  properties
     dct['name'] = str(datetime_to_timestamp(issue.createdTime)
                       ) + str(hash(dct.get('fullFormattedMessage')))
     return dct

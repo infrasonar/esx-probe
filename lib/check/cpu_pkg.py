@@ -1,6 +1,5 @@
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
-from ..utils import prop_val_to_dict
 from ..vmwarequery import vmwarequery
 
 
@@ -17,7 +16,13 @@ async def check_cpu_pkg(
     )
 
     cpus = [
-        prop_val_to_dict(prop_val, item_name=str(prop_val.index))
+        {
+            'name': str(prop_val.index),
+            'busHz': prop_val.busHz,
+            'description': prop_val.description,
+            'hz': prop_val.hz,
+            'vendor': prop_val.vendor,
+        }
         for item in result
         for prop in item.propSet
         for prop_val in prop.val

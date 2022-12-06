@@ -38,23 +38,10 @@ def dyn_property_list_to_dict(lst, item_name=None):
     return dct
 
 
-def prop_val_to_value_list(prop_val, value_name='value'):
-    lst = []
-    for name, info in prop_val._propInfo.items():
-        if info.type in BASE_TYPES:
-            lst.append({'name': name, value_name: getattr(prop_val, name)})
-        elif info.type == datetime.datetime:
-            lst.append({'name': name, value_name:
-                        datetime_to_timestamp(getattr(prop_val, name))})
-        elif hasattr(info.type, 'values'):
-            # values (lookup) is always empty
-            lst.append({'name': name, value_name: getattr(prop_val, name)})
-    return lst
-
-
 def prop_val_to_dict(prop_val, item_name=None):
     dct = {}
     for name, info in prop_val._propInfo.items():
+        print(name, info)
         if info.type in BASE_TYPES:
             dct[name] = getattr(prop_val, name)
         elif info.type == datetime.datetime:

@@ -1,6 +1,5 @@
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
-from ..utils import prop_val_to_dict
 from ..vmwarequery import vmwarequery
 
 
@@ -18,10 +17,16 @@ async def check_alarms(
 
     alarms = [
         {
-            **prop_val_to_dict(alarm, item_name=str(alarm.key)),
+            'name': str(alarm.key),
             'entityName': alarm.entity.name,
             'alarmInfo': alarm.alarm.info.name,
             'alarmDesc': alarm.alarm.info.description,
+            'acknowledged': alarm.acknowledged,
+            'acknowledgedByUser': alarm.acknowledgedByUser,
+            'acknowledgedTime': alarm.acknowledgedTime,  # TODO datetime?
+            'eventKey': alarm.eventKey,
+            'overallStatus': alarm.overallStatus,
+            'time': alarm.time,  # TODO datetime?
         }
         for item in result
         for prop in item.propSet

@@ -1,6 +1,5 @@
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
-from ..utils import prop_val_to_dict
 from ..vmwarequery import vmwarequery
 
 
@@ -17,7 +16,17 @@ async def check_pci(
     )
 
     pcis = [
-        prop_val_to_dict(prop_val, item_name=str(prop_val.id))
+        {
+            'name': prop_val.id,  # str
+            'classId': prop_val.classId,
+            'deviceId': prop_val.deviceId,
+            'deviceName': prop_val.deviceName,
+            'parentBridge': prop_val.parentBridge,
+            'subDeviceId': prop_val.subDeviceId,
+            'subVendorId': prop_val.subVendorId,
+            'vendorId': prop_val.vendorId,
+            'vendorName': prop_val.vendorName,
+        }
         for item in result
         for prop in item.propSet
         for prop_val in prop.val

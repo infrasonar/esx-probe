@@ -1,7 +1,7 @@
 import time
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
-from ..utils import prop_val_to_dict, datetime_to_timestamp
+from ..utils import datetime_to_timestamp
 from ..vmwarequery import vmwarequery
 
 
@@ -23,8 +23,20 @@ async def check_datastore_summary(
         info, summary = item.propSet
 
         datastore = {
-            **prop_val_to_dict(info.val),
-            **prop_val_to_dict(summary.val),
+            'datastore': summary.val.datastore,
+            'name': summary.val.name,
+            'url': summary.val.url,
+            'capacity': summary.val.capacity,
+            'freeSpace': summary.val.freeSpace,
+            'uncommitted': summary.val.uncommitted,
+            'multipleHostAccess': summary.val.multipleHostAccess,
+            'type': summary.val.type,
+            'maintenanceMode': summary.val.maintenanceMode,
+            'maxPhysicalRDMFileSize': getattr(
+                info.val, 'maxPhysicalRDMFileSize', None),
+            'maxVirtualRDMFileSize': getattr(
+                info.val, 'maxVirtualRDMFileSize', None),
+
         }
         datastore_out.append(datastore)
 
@@ -34,10 +46,34 @@ async def check_datastore_summary(
             datastore['age'] = time.time() - ts
         vmfs = getattr(info.val, 'vmfs', None)
         if vmfs is not None:
-            vmfs_out.append(prop_val_to_dict(vmfs, datastore['name']))
+            vmfs_out.append({
+                'name': datastore['name'],
+                'datastore': datastore['datastore'],
+                'blockSizeMb': vmfs.blockSizeMb,
+                'blockSize': vmfs.blockSize,
+                'unmapGranularity': vmfs.unmapGranularity,
+                'unmapPriority': vmfs.unmapPriority,
+                'unmapBandwidthSpec': vmfs.unmapBandwidthSpec,
+                'maxBlocks': vmfs.maxBlocks,
+                'majorVersion': vmfs.majorVersion,
+                'uuid': vmfs.uuid,
+                'version': vmfs.version,
+                'vmfsUpgradable': vmfs.vmfsUpgradable,
+                'ssd': vmfs.ssd,
+                'local': vmfs.local,
+                'scsiDiskType': vmfs.scsiDiskType,
+            })
         nas = getattr(info.val, 'nas', None)
         if nas is not None:
-            nas_out.append(prop_val_to_dict(nas, datastore['name']))
+            nas_out.append({
+                'name': datastore['name'],
+                'datastore': datastore['datastore'],
+                'protocolEndpoint': nas.protocolEndpoint,
+                'remoteHost': nas.remoteHost,
+                'remotePath': nas.remotePath,
+                'securityType': nas.securityType,
+                # 'userName': nas.userName,
+            })
 
     return {
         'datastore': datastore_out,

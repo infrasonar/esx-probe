@@ -1,6 +1,5 @@
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
-from ..utils import prop_val_to_value_list
 from ..vmwarequery import vmwarequery
 
 
@@ -17,11 +16,14 @@ async def check_capabilities(
     )
 
     capabilities = [
-        val
+        {
+            'name': name,
+            'value': getattr(prop.val, name)
+        }
         for item in result
         for prop in item.propSet
-        for val in prop_val_to_value_list(
-            prop.val, value_name='capability')
+        for name in prop.val._propInfo
+        if isinstance(getattr(prop.val, name, None), bool)
     ]
 
     return {
