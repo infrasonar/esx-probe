@@ -1,16 +1,4 @@
 import calendar
-import datetime
-from pyVmomi.VmomiSupport import short as vmoni_short
-from pyVmomi.VmomiSupport import long as vmoni_long
-
-
-BASE_TYPES = (
-    str,
-    int,
-    vmoni_long,
-    vmoni_short,
-    float,
-    bool)
 
 
 def datetime_to_timestamp(inp):
@@ -19,18 +7,44 @@ def datetime_to_timestamp(inp):
     return calendar.timegm(inp.timetuple())
 
 
-def prop_val_to_dict(prop_val, item_name=None):
-    dct = {}
-    for name, info in prop_val._propInfo.items():
-        print(name, info)
-        if info.type in BASE_TYPES:
-            dct[name] = getattr(prop_val, name)
-        elif info.type == datetime.datetime:
-            dct[name] = datetime_to_timestamp(getattr(prop_val, name))
-        elif hasattr(info.type, 'values'):
-            # values (lookup) is always empty
-            dct[name] = getattr(prop_val, name)
+def on_about_info(obj):
+    # vim.AboutInfo
+    return {
+        'apiType': obj.apiType,  # str
+        'apiVersion': obj.apiVersion,  # str
+        'build': obj.build,  # str
+        'fullName': obj.fullName,  # str
+        'instanceUuid': obj.instanceUuid,  # str
+        'licenseProductName': obj.licenseProductName,  # str
+        'licenseProductVersion': obj.licenseProductVersion,  # str
+        'localeBuild': obj.localeBuild,  # str
+        'localeVersion': obj.localeVersion,  # str
+        'name': obj.name,  # str
+        'osType': obj.osType,  # str
+        'patchLevel': obj.patchLevel,  # str
+        'productLineId': obj.productLineId,  # int
+        'vendor': obj.vendor,  # str
+        'version': obj.version,  # str
+    }
 
-    if item_name:
-        dct['name'] = item_name
-    return dct
+
+def on_config_summary(obj):
+    # vim.host.Summary.ConfigSummary
+    return {
+        'faultToleranceEnabled': obj.faultToleranceEnabled,  # bool
+        'port': obj.port,  # int
+        'sslThumbprint': obj.sslThumbprint,  # int/null
+        'vmotionEnabled': obj.vmotionEnabled,  # int
+    }
+
+
+def on_host_summary(obj):
+    # vim.host.Summary
+    return {
+        'currentEVCGraphicsModeKey': obj.currentEVCGraphicsModeKey,  # str
+        'currentEVCModeKey': obj.currentEVCModeKey,  # str
+        'managementServerIp': obj.managementServerIp,  # str
+        'maxEVCModeKey': obj.maxEVCModeKey,  # str
+        'overallStatus': obj.overallStatus,  # str
+        'rebootRequired': obj.rebootRequired,  # bool
+    }

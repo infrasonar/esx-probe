@@ -1,15 +1,22 @@
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
-from ..utils import datetime_to_timestamp
 from ..vmwarequery import vmwarequery
 
 
-# TODO andere itemnaam functie?
 def fmt_issue(issue) -> dict:
-    dct = {}  # TODO  properties
-    dct['name'] = str(datetime_to_timestamp(issue.createdTime)
-                      ) + str(hash(dct.get('fullFormattedMessage')))
-    return dct
+    # vim.event.EventEx
+
+    severity = getattr(issue.severity, None)  # str/null
+    if severity is None:
+        # see vim.event.EventEx docs
+        severity = 'info'
+
+    return {
+        'name': str(issue.key),  # int
+        'severity': severity,
+        'eventTypeId': issue.eventTypeId,  # str
+        'fullFormattedMessage': issue.fullFormattedMessage,  # str
+    }
 
 
 async def check_config_issues(
@@ -29,6 +36,7 @@ async def check_config_issues(
         for item in result
         for prop in item.propSet
         for issue in prop.val
+        if isinstance(issue, vim.event.EventEx)
     ]
 
     return {
