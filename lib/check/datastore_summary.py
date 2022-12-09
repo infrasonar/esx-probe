@@ -1,4 +1,3 @@
-import time
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
 from ..utils import datetime_to_timestamp
@@ -23,32 +22,37 @@ async def check_datastore_summary(
         info, summary = item.propSet
 
         datastore = {
-            'datastore': summary.val.datastore,
-            'name': summary.val.name,
-            'url': summary.val.url,
-            'capacity': summary.val.capacity,
-            'freeSpace': summary.val.freeSpace,
-            'uncommitted': summary.val.uncommitted,
-            'multipleHostAccess': summary.val.multipleHostAccess,
-            'type': summary.val.type,
-            'maintenanceMode': summary.val.maintenanceMode,
+            'name': summary.val.name,  # str
+            'accessible':  summary.val.accessible,
+            'capacity': summary.val.capacity,  # int
+            'freeSpace': summary.val.freeSpace,  # int
+            'maintenanceMode': summary.val.maintenanceMode,  # str/null
+            'multipleHostAccess': summary.val.multipleHostAccess,  # bool/null
+            'type': summary.val.type,  # str
+            'uncommitted': summary.val.uncommitted,  # int
+            'url': summary.val.url,  # str
+            'maxFileSize': info.val.maxFileSize,  # int
+            'maxMemoryFileSize': getattr(
+                info.val, 'maxMemoryFileSize', None),  # int/null
             'maxPhysicalRDMFileSize': getattr(
-                info.val, 'maxPhysicalRDMFileSize', None),
+                info.val, 'maxPhysicalRDMFileSize', None),  # int/null
+            'maxVirtualDiskCapacity': getattr(
+                info.val, 'maxVirtualRDMFileSize', None),  # int/null
             'maxVirtualRDMFileSize': getattr(
-                info.val, 'maxVirtualRDMFileSize', None),
+                info.val, 'maxVirtualRDMFileSize', None),  # int/null
 
         }
         datastore_out.append(datastore)
 
         dt = getattr(info.val, 'timestamp', None)
         if dt is not None:
-            datastore['timestamp'] = ts = datetime_to_timestamp(dt)
-            datastore['age'] = time.time() - ts
+            datastore['timestamp'] = datetime_to_timestamp(dt)
         vmfs = getattr(info.val, 'vmfs', None)
         if vmfs is not None:
+            datastore['vmfs'] = vmfs.name
             vmfs_out.append({
-                'name': datastore['name'],
-                'datastore': datastore['datastore'],
+                'name': vmfs.name,
+                'datastore': datastore['name'],
                 'blockSizeMb': vmfs.blockSizeMb,
                 'blockSize': vmfs.blockSize,
                 'unmapGranularity': vmfs.unmapGranularity,
@@ -66,8 +70,8 @@ async def check_datastore_summary(
         nas = getattr(info.val, 'nas', None)
         if nas is not None:
             nas_out.append({
-                'name': datastore['name'],
-                'datastore': datastore['datastore'],
+                'name': nas.name,
+                'datastore': datastore['name'],
                 'protocolEndpoint': nas.protocolEndpoint,
                 'remoteHost': nas.remoteHost,
                 'remotePath': nas.remotePath,

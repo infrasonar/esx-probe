@@ -187,6 +187,7 @@ def snapshot_flat(snapshots, vm_name, current_time):
         snapshot_dct['vm'] = vm_name
         create_time = snapshot_dct.get('createTime')
         if create_time:
+            # TODO
             snapshot_dct['age'] = current_time - create_time
         yield snapshot_dct
         for item in snapshot_flat(
@@ -271,14 +272,11 @@ async def check_host_vms(
 
         # SNAPSHOTS
         if 'snapshot' in vm:
-            snap_lst = list(
+            snapshots.extend(
                 snapshot_flat(
                     vm['snapshot'].rootSnapshotList,
                     vm['name'],
                     ts))
-
-            for snap_dct in snap_lst:
-                snapshots.append(snap_dct)
 
         for device in vm['config'].hardware.device:
             if (device.key >= 2000) and (device.key < 3000):
