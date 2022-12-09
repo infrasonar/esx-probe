@@ -1,7 +1,7 @@
-[![CI](https://github.com/infrasonar/vmware-probe/workflows/CI/badge.svg)](https://github.com/infrasonar/vmware-probe/actions)
-[![Release Version](https://img.shields.io/github/release/infrasonar/vmware-probe)](https://github.com/infrasonar/vmware-probe/releases)
+[![CI](https://github.com/infrasonar/esx-probe/workflows/CI/badge.svg)](https://github.com/infrasonar/esx-probe/actions)
+[![Release Version](https://img.shields.io/github/release/infrasonar/esx-probe)](https://github.com/infrasonar/esx-probe/releases)
 
-# InfraSonar VMware Probe
+# InfraSonar VMware ESX Probe
 
 ## Environment variable
 
@@ -17,5 +17,5 @@ Variable          | Default                        | Description
 ## Docker build
 
 ```
-docker build -t vmware-probe . --no-cache
+docker build -t esx-probe . --no-cache
 ```

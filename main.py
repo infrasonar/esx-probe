@@ -32,6 +32,6 @@ if __name__ == '__main__':
         'sensor': check_sensor,  # esx-only
     }
 
-    probe = Probe("vmware", version, checks)
+    probe = Probe("esx", version, checks)
 
     probe.start()

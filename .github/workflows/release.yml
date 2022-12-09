@@ -32,7 +32,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/infrasonar/vmware-probe
+          images: ${{ env.REGISTRY }}/infrasonar/esx-probe
 
       - name: Get the version
         id: get_version
@@ -45,5 +45,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/infrasonar/vmware-probe:${{ steps.get_version.outputs.VERSION }},ghcr.io/infrasonar/vmware-probe:latest,ghcr.io/infrasonar/vmware-probe:unstable
+          tags: ghcr.io/infrasonar/esx-probe:${{ steps.get_version.outputs.VERSION }},ghcr.io/infrasonar/esx-probe:latest,ghcr.io/infrasonar/esx-probe:unstable
           labels: ${{ steps.meta.outputs.labels }}
