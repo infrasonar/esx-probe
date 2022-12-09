@@ -32,6 +32,7 @@ def on_config_summary(obj):
     # vim.host.Summary.ConfigSummary
     return {
         'faultToleranceEnabled': obj.faultToleranceEnabled,  # bool
+        'name': obj.name,  # str
         'port': obj.port,  # int
         'sslThumbprint': obj.sslThumbprint,  # int/null
         'vmotionEnabled': obj.vmotionEnabled,  # int

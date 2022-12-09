@@ -6,7 +6,7 @@ from ..vmwarequery import vmwarequery
 def fmt_issue(issue) -> dict:
     # vim.event.EventEx
 
-    severity = getattr(issue.severity, None)  # str/null
+    severity = getattr(issue, 'severity', None)  # str/null
     if severity is None:
         # see vim.event.EventEx docs
         severity = 'info'

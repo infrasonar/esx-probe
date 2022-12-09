@@ -42,21 +42,21 @@ def on_runtime_info(obj):
         'cleanPowerOff': obj.cleanPowerOff,  # bool
         'connectionState': obj.connectionState,  # str
         'consolidationNeeded': obj.consolidationNeeded,  # str
-        'cryptoState': obj.cryptoState,  # str
-        # 'dasVmProtection': obj.dasVmProtection,  # str
+        'cryptoState': obj.cryptoState,  # str/null
+        'dasVmProtection': obj.dasVmProtection,  # str/null
         'faultToleranceState': obj.faultToleranceState,  # str
         'instantCloneFrozen': obj.instantCloneFrozen,  # bool
         'maxCpuUsage': obj.maxCpuUsage,  # int
         'maxMemoryUsage': obj.maxMemoryUsage,  # int
         'memoryOverhead': obj.memoryOverhead,  # int
         'minRequiredEVCModeKey': obj.minRequiredEVCModeKey,  # str
-        'needSecondaryReason': obj.needSecondaryReason,  # str
+        'needSecondaryReason': obj.needSecondaryReason,  # str/null
         'numMksConnections': obj.numMksConnections,  # int
         'onlineStandby': obj.onlineStandby,  # bool
         'paused': obj.paused,  # bool
         'powerState': obj.powerState,  # str
-        # 'question': obj.question,  # str
-        'quiescedForkParent': obj.quiescedForkParent,  # bool
+        'question': obj.question,  # str/null
+        'quiescedForkParent': obj.quiescedForkParent,  # bool/null
         'recordReplayState': obj.recordReplayState,  # str
         'snapshotInBackground': obj.snapshotInBackground,  # bool
         'suspendInterval': obj.suspendInterval,  # int
@@ -108,8 +108,8 @@ def on_config_info(obj):
         'modified': datetime_to_timestamp(obj.modified),
         'name': obj.name,  # str
         'nestedHVEnabled': obj.nestedHVEnabled,  # bool
-        'npivDesiredNodeWwns': obj.npivDesiredNodeWwns,  # int
-        'npivDesiredPortWwns': obj.npivDesiredPortWwns,  # int
+        'npivDesiredNodeWwns': obj.npivDesiredNodeWwns,  # int/null
+        'npivDesiredPortWwns': obj.npivDesiredPortWwns,  # int/null
         'migrateEncryption': obj.migrateEncryption,  # str
         # 'npivNodeWorldWideName': obj.npivNodeWorldWideName,  # [int]
         'npivOnNonRdmDisks': obj.npivOnNonRdmDisks,  # bool
@@ -129,14 +129,14 @@ def on_config_info(obj):
         'vmOpNotificationToAppEnabled':
             obj.vmOpNotificationToAppEnabled,  # int
         'vmStorageObjectId': obj.vmStorageObjectId,  # str
-        # 'vmxConfigChecksum': obj.vmxConfigChecksum,  # str
+        'vmxConfigChecksum': obj.vmxConfigChecksum,  # str/null
     }
 
 
 def on_virtual_disk_backing_info(obj):
     # vim.vm.device.VirtualDisk.FlatVer2BackingInfo
     return {
-        'changeId': obj.changeId,  # str
+        'changeId': obj.changeId,  # str/null
         'contentId': obj.contentId,  # str
         'deltaDiskFormat': obj.deltaDiskFormat,  # str
         'deltaDiskFormatVariant': obj.deltaDiskFormatVariant,  # str
@@ -144,6 +144,7 @@ def on_virtual_disk_backing_info(obj):
         'digestEnabled': obj.digestEnabled,  # bool
         'diskMode': obj.diskMode,  # str
         'eagerlyScrub': obj.eagerlyScrub,  # bool
+        'fileName': obj.fileName,  # str
         'sharing': obj.sharing,  # str
         'split': obj.split,  # bool
         'thinProvisioned': obj.thinProvisioned,  # bool

@@ -71,7 +71,7 @@ async def check_datastore_summary(
                 'protocolEndpoint': nas.protocolEndpoint,
                 'remoteHost': nas.remoteHost,
                 'remotePath': nas.remotePath,
-                'securityType': nas.securityType,
+                # 'securityType': nas.securityType,
                 # 'userName': nas.userName,
             })
 
