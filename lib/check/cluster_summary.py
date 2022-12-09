@@ -1,4 +1,5 @@
 from libprobe.asset import Asset
+from libprobe.exceptions import IgnoreCheckException
 from pyVmomi import vim  # type: ignore
 from ..utils import on_about_info
 from ..utils import on_config_summary
@@ -21,13 +22,6 @@ async def check_cluster_summary(
         asset: Asset,
         asset_config: dict,
         check_config: dict) -> dict:
-    hosts_ = await vmwarequery(
-        asset,
-        asset_config,
-        check_config,
-        vim.HostSystem,
-        ['name', 'summary'],
-    )
     clusters_ = await vmwarequery(
         asset,
         asset_config,
@@ -35,7 +29,16 @@ async def check_cluster_summary(
         vim.ClusterComputeResource,
         ['summary', 'host'],
     )
+    if len(clusters_) == 0:
+        raise IgnoreCheckException  # TODO
 
+    hosts_ = await vmwarequery(
+        asset,
+        asset_config,
+        check_config,
+        vim.HostSystem,
+        ['name', 'summary'],
+    )
     clusters_lookup = {
         c.obj: {p.name: p.val for p in c.propSet} for c in clusters_}
     hosts_lookup = {

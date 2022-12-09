@@ -19,9 +19,11 @@ async def vmwarequery(
     address = check_config.get('address')
     if not address:
         address = asset.name
-    assert asset_config, 'missing credentials'
-    username = asset_config['username']
-    password = asset_config['password']
+    username = asset_config.get('username')
+    password = asset_config.get('password')
+    if None in (username, password):
+        logging.error(f'missing credentails for {asset}')
+        raise IgnoreResultException
 
     try:
         result = await asyncio.get_event_loop().run_in_executor(
@@ -40,6 +42,9 @@ async def vmwarequery(
     except (vim.fault.InvalidLogin,
             vim.fault.NotAuthenticated):
         raise IgnoreResultException
+    except vim.fault.HostConnectFault:
+        msg = 'Failed to connect.'
+        raise CheckException(msg)
     except (IOError,
             BadStatusLine,
             ConnectionError) as e:
