@@ -55,18 +55,13 @@ def on_hardware_summary(obj):
 def fmt_summary(summary) -> dict:
     output = {}
     output['quickStats'] = [on_quick_stats(summary.quickStats)]
-
-    # TODO
-    # output['hardwareOther'] = [
-    #     {
-    #         **{
-    #             item.identifierType.key: item.identifierValue
-    #             for item in summary.hardware.otherIdentifyingInfo
-    #         },
-    #         'name': 'hardwareOther',
-    #     }
-    # ]
     output['hardware'] = [on_hardware_summary(summary.hardware)]
+    output['hardwareOther'] = [
+        {
+            'name': item.identifierType.key,
+            'value': item.identifierValue}
+        for item in summary.hardware.otherIdentifyingInfo
+    ]
     output['feature'] = [
         {
             'name': feature.key,
