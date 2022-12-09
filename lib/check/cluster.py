@@ -30,7 +30,7 @@ async def check_cluster(
         ['summary', 'host'],
     )
     if len(clusters_) == 0:
-        raise IgnoreCheckException  # TODO
+        raise IgnoreCheckException
 
     hosts_ = await vmwarequery(
         asset,
