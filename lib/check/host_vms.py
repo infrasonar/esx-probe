@@ -37,7 +37,7 @@ def on_guest_info(obj):
 def on_runtime_info(obj):
     # vim.vm.RuntimeInfo
     return {
-        'bootTime': datetime_to_timestamp(obj.bootTime),
+        'bootTime': datetime_to_timestamp(obj.bootTime),  # int/null
         'cleanPowerOff': obj.cleanPowerOff,  # bool
         'connectionState': obj.connectionState,  # str
         'consolidationNeeded': obj.consolidationNeeded,  # str
