@@ -18,18 +18,18 @@ from lib.version import __version__ as version
 if __name__ == '__main__':
     checks = {
         'alarms': check_alarms,
-        'capabilities': check_capabilities,
-        'cluster': check_cluster,
+        'capabilities': check_capabilities,  # esx-only
+        'cluster': check_cluster,  # optional
         'configIssues': check_config_issues,
-        'cpu': check_cpu,
+        'cpu': check_cpu,  # esx-only
         'datastore': check_datastore,
-        'hardwareStatus': check_hardware_status,
-        'host': check_host,
+        'hardwareStatus': check_hardware_status,  # esx-only
+        'host': check_host,  # esx-only
         'hostVMs': check_host_vms,
         'licences': check_licenses,
-        'network': check_network,
-        'pci': check_pci,
-        'sensor': check_sensor,
+        'network': check_network,  # esx-only
+        'pci': check_pci,  # esx-only
+        'sensor': check_sensor,  # esx-only
     }
 
     probe = Probe("vmware", version, checks)
