@@ -24,7 +24,7 @@ def on_runtime_info(obj):
 def on_quick_stats(obj):
     # vim.host.Summary.QuickStats
     return {
-        'name': 'quickStats',
+        'name': 'stats',
         'availablePMemCapacity': obj.availablePMemCapacity,  # int/null
         'distributedCpuFairness': obj.distributedCpuFairness,  # int/null
         'distributedMemoryFairness': obj.distributedMemoryFairness,  # int/null
@@ -54,7 +54,7 @@ def on_hardware_summary(obj):
 
 def fmt_summary(summary) -> dict:
     output = {}
-    output['quickStats'] = [on_quick_stats(summary.quickStats)]
+    output['stats'] = [on_quick_stats(summary.quickStats)]
     output['hardware'] = [on_hardware_summary(summary.hardware)]
     output['hardwareOther'] = [
         {
@@ -92,7 +92,7 @@ def fmt_summary(summary) -> dict:
     return output
 
 
-async def check_host_summary(
+async def check_host(
         asset: Asset,
         asset_config: dict,
         check_config: dict) -> dict:

@@ -4,7 +4,7 @@ from ..utils import datetime_to_timestamp
 from ..vmwarequery import vmwarequery
 
 
-async def check_datastore_summary(
+async def check_datastore(
         asset: Asset,
         asset_config: dict,
         check_config: dict) -> dict:

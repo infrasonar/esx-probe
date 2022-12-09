@@ -18,7 +18,7 @@ def on_cluster_summary(obj):
     }
 
 
-async def check_cluster_summary(
+async def check_cluster(
         asset: Asset,
         asset_config: dict,
         check_config: dict) -> dict:

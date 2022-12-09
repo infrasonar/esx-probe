@@ -26,5 +26,5 @@ async def check_licenses(
     ]
 
     return {
-        'licensableResource': licenses
+        'licenses': licenses
     }

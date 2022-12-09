@@ -1,5 +1,4 @@
 import logging
-import time
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
 from ..utils import datetime_to_timestamp
@@ -178,22 +177,18 @@ def on_snapshot_tree(obj):
     }
 
 
-def snapshot_flat(snapshots, vm_name, current_time):
+def snapshot_flat(snapshots, vm_name):
     for snapshot in snapshots:
         snapshot_dct = on_snapshot_tree(snapshot)
         snapshot_dct['name'] = str(snapshot.id)
         snapshot_dct['snapshotName'] = snapshot.name
         snapshot_dct['snapshotId'] = snapshot.id
         snapshot_dct['vm'] = vm_name
-        create_time = snapshot_dct.get('createTime')
-        if create_time:
-            # TODO
-            snapshot_dct['age'] = current_time - create_time
         yield snapshot_dct
         for item in snapshot_flat(
-                snapshot.childSnapshotList, vm_name, current_time):
-            item['parentSnapShotId'] = snapshot.id
-            item['parentSnapShotName'] = snapshot.name
+                snapshot.childSnapshotList, vm_name):
+            item['parentsnapshotId'] = snapshot.id
+            item['parentsnapshotName'] = snapshot.name
             yield item
 
 
@@ -201,8 +196,6 @@ async def check_host_vms(
         asset: Asset,
         asset_config: dict,
         check_config: dict) -> dict:
-
-    ts = int(time.time())
 
     stores_ = await vmwarequery(
         asset,
@@ -274,9 +267,7 @@ async def check_host_vms(
         if 'snapshot' in vm:
             snapshots.extend(
                 snapshot_flat(
-                    vm['snapshot'].rootSnapshotList,
-                    vm['name'],
-                    ts))
+                    vm['snapshot'].rootSnapshotList, vm['name']))
 
         for device in vm['config'].hardware.device:
             if (device.key >= 2000) and (device.key < 3000):
@@ -344,7 +335,7 @@ async def check_host_vms(
         'guestCount': guest_count,
         'hypervisors': hypervisors,
         'virtualDisks': virtual_disks,
-        'snapShots': snapshots,
+        'snapshots': snapshots,
         'runtimes': runtimes,
         'virtualStorage': list(virtual_storage_capacities.values())
     }

@@ -3,7 +3,7 @@ from pyVmomi import vim  # type: ignore
 from ..vmwarequery import vmwarequery
 
 
-async def check_cpu_pkg(
+async def check_cpu(
         asset: Asset,
         asset_config: dict,
         check_config: dict) -> dict:

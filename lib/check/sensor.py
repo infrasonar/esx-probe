@@ -3,7 +3,7 @@ from pyVmomi import vim  # type: ignore
 from ..vmwarequery import vmwarequery
 
 
-async def check_sensor_info(
+async def check_sensor(
         asset: Asset,
         asset_config: dict,
         check_config: dict) -> dict:
