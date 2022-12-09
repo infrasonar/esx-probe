@@ -68,6 +68,6 @@ async def check_cluster(
             hosts.append(host_dct)
 
     return {
-        'clusterSummary': summary,
+        'cluster': summary,
         'hosts': hosts
     }
