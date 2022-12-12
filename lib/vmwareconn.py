@@ -2,7 +2,6 @@ import logging
 import ssl
 from pyVmomi import vmodl  # type: ignore
 from pyVim import connect
-from requests.exceptions import ConnectionError
 
 from .asset_cache import AssetCache
 
