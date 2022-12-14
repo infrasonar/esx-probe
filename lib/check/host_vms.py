@@ -157,7 +157,6 @@ def on_virtual_disk(obj):
     return {
         **on_virtual_disk_backing_info(obj.backing),
         'capacityInBytes': obj.capacityInBytes,  # int
-        'capacityInKB': obj.capacityInKB,  # int/null
         'diskObjectId': obj.diskObjectId,  # str/null
         'nativeUnmanagedLinkedClone': obj.nativeUnmanagedLinkedClone,  # bool
     }
