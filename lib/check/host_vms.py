@@ -21,7 +21,6 @@ def on_guest_info(obj):
         'guestState': obj.guestState,  # str
         'guestStateChangeSupported': obj.guestStateChangeSupported,  # bool
         'hostName': obj.hostName,  # str
-        'hwVersion': obj.hwVersion,  # str
         'interactiveGuestOperationsReady':
             obj.interactiveGuestOperationsReady,  # bool
         'ipAddress': obj.ipAddress,  # str
@@ -42,7 +41,6 @@ def on_runtime_info(obj):
         'connectionState': obj.connectionState,  # str
         'consolidationNeeded': obj.consolidationNeeded,  # str
         'cryptoState': obj.cryptoState,  # str/null
-        'dasVmProtection': obj.dasVmProtection,  # str/null
         'faultToleranceState': obj.faultToleranceState,  # str
         'instantCloneFrozen': obj.instantCloneFrozen,  # bool
         'maxCpuUsage': obj.maxCpuUsage,  # int
@@ -54,16 +52,13 @@ def on_runtime_info(obj):
         'onlineStandby': obj.onlineStandby,  # bool
         'paused': obj.paused,  # bool
         'powerState': obj.powerState,  # str
-        'question': obj.question,  # str/null
         'quiescedForkParent': obj.quiescedForkParent,  # bool/null
         'recordReplayState': obj.recordReplayState,  # str
         'snapshotInBackground': obj.snapshotInBackground,  # bool
         'suspendInterval': obj.suspendInterval,  # int
         'suspendTime': datetime_to_timestamp(obj.suspendTime),
-        'suspendedToMemory': obj.suspendedToMemory,  # bool
         'toolsInstallerMounted': obj.toolsInstallerMounted,  # bool
         'vFlashCacheAllocation': obj.vFlashCacheAllocation,  # int
-        'vmFailoverInProgress': obj.vmFailoverInProgress,  # int
     }
 
 
@@ -90,7 +85,6 @@ def on_config_info(obj):
         'cpuHotAddEnabled': obj.cpuHotAddEnabled,  # bool
         'cpuHotRemoveEnabled': obj.cpuHotRemoveEnabled,  # bool
         'firmware': obj.firmware,  # str
-        'ftEncryptionMode': obj.ftEncryptionMode,  # str
         'guestAutoLockEnabled': obj.guestAutoLockEnabled,  # bool
         'guestFullName': obj.guestFullName,  # str
         'guestId': obj.guestId,  # str
@@ -110,13 +104,9 @@ def on_config_info(obj):
         'npivDesiredNodeWwns': obj.npivDesiredNodeWwns,  # int/null
         'npivDesiredPortWwns': obj.npivDesiredPortWwns,  # int/null
         'migrateEncryption': obj.migrateEncryption,  # str
-        # 'npivNodeWorldWideName': obj.npivNodeWorldWideName,  # [int]
         'npivOnNonRdmDisks': obj.npivOnNonRdmDisks,  # bool
-        # 'npivPortWorldWideName': obj.npivPortWorldWideName,  # [int]
         'npivTemporaryDisabled': obj.npivTemporaryDisabled,  # bool
         'npivWorldWideNameType': obj.npivWorldWideNameType,  # str
-        'pmemFailoverEnabled': obj.pmemFailoverEnabled,  # str
-        'sevEnabled': obj.sevEnabled,  # bool
         'swapPlacement': obj.swapPlacement,  # str
         'swapStorageObjectId': obj.swapStorageObjectId,  # str
         'template': obj.template,  # bool
@@ -125,10 +115,7 @@ def on_config_info(obj):
         'vFlashCacheReservation': obj.vFlashCacheReservation,  # int
         'vPMCEnabled': obj.vPMCEnabled,  # bool
         'version': obj.version,  # str
-        'vmOpNotificationToAppEnabled':
-            obj.vmOpNotificationToAppEnabled,  # int
         'vmStorageObjectId': obj.vmStorageObjectId,  # str
-        'vmxConfigChecksum': obj.vmxConfigChecksum,  # str/null
     }
 
 
@@ -157,7 +144,6 @@ def on_virtual_disk(obj):
     return {
         **on_virtual_disk_backing_info(obj.backing),
         'capacityInBytes': obj.capacityInBytes,  # int
-        'capacityInKB': obj.capacityInKB,  # int/null
         'diskObjectId': obj.diskObjectId,  # str/null
         'nativeUnmanagedLinkedClone': obj.nativeUnmanagedLinkedClone,  # bool
     }
@@ -187,8 +173,6 @@ def snapshot_flat(snapshots, vm_name):
         yield snapshot_dct
         for item in snapshot_flat(
                 snapshot.childSnapshotList, vm_name):
-            item['parentsnapshotId'] = snapshot.id
-            item['parentsnapshotName'] = snapshot.name
             yield item
 
 
