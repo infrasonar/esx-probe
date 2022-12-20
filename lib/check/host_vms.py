@@ -2,9 +2,6 @@ import logging
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
 from ..utils import datetime_to_timestamp
-from ..utils import on_host_summary
-from ..utils import on_config_summary
-from ..utils import on_about_info
 from ..vmwarequery import vmwarequery
 
 
@@ -86,8 +83,8 @@ def on_config_info(obj):
         'cpuHotRemoveEnabled': obj.cpuHotRemoveEnabled,  # bool
         'firmware': obj.firmware,  # str
         'guestAutoLockEnabled': obj.guestAutoLockEnabled,  # bool
-        'guestFullName': obj.guestFullName,  # str
-        'guestId': obj.guestId,  # str
+        'guestFullNameConfig': obj.guestFullName,  # str
+        'guestIdConfig': obj.guestId,  # str
         'hotPlugMemoryIncrementSize': obj.hotPlugMemoryIncrementSize,  # str
         'hotPlugMemoryLimit': obj.hotPlugMemoryLimit,  # str
         'instanceUuid': obj.instanceUuid,  # str
@@ -99,7 +96,7 @@ def on_config_info(obj):
         'messageBusTunnelEnabled': obj.messageBusTunnelEnabled,  # bool
         'migrateEncryption': obj.migrateEncryption,  # str
         'modified': datetime_to_timestamp(obj.modified),
-        'name': obj.name,  # str
+        # 'name': obj.name,  # str
         'nestedHVEnabled': obj.nestedHVEnabled,  # bool
         'npivDesiredNodeWwns': obj.npivDesiredNodeWwns,  # int/null
         'npivDesiredPortWwns': obj.npivDesiredPortWwns,  # int/null
@@ -173,6 +170,8 @@ def snapshot_flat(snapshots, vm_name):
         yield snapshot_dct
         for item in snapshot_flat(
                 snapshot.childSnapshotList, vm_name):
+            item['parentSnapshotName'] = snapshot.name
+            item['parentSnapshotId'] = snapshot.id
             yield item
 
 
@@ -189,14 +188,6 @@ async def check_host_vms(
         ['name', 'summary.capacity', 'info'],
     )
 
-    hypervisors_ = await vmwarequery(
-        asset,
-        asset_config,
-        check_config,
-        vim.HostSystem,
-        ['name', 'summary'],
-    )
-
     vms_ = await vmwarequery(
         asset,
         asset_config,
@@ -207,8 +198,6 @@ async def check_host_vms(
 
     stores_lookup = {
         store.obj: {p.name: p.val for p in store.propSet} for store in stores_}
-    hypervisors_lookup = {
-        hyp.obj: {p.name: p.val for p in hyp.propSet} for hyp in hypervisors_}
     vms_retrieved = {
         vm.obj: {p.name: p.val for p in vm.propSet} for vm in vms_}
 
@@ -216,9 +205,6 @@ async def check_host_vms(
     virtual_disks = []
     snapshots = []
     virtual_storage_capacities = {}
-    runtimes = []
-    hypervisors = []
-    guest_configs = []
 
     for moref, vm in vms_retrieved.items():
         if 'config' not in vm:
@@ -228,24 +214,14 @@ async def check_host_vms(
             continue
         if vm['config'].template:
             continue
-        lookup_info = {'sourceProbeName': 'vmwareProbe'}
-        fqdn = vm['guest'].hostName
-        if vm['guest'].ipAddress:
-            lookup_info['ip4'] = vm['guest'].ipAddress
-        lookup_info['name'] = vm['name']
-        lookup_info['moref'] = moref._moId
-        lookup_info['sourceUniqueId'] = instance_uuid = \
-            vm['config'].instanceUuid
-        vm['lookupInfo'] = lookup_info
 
         # CHECK HOST VMS
         info_dct = on_guest_info(vm['guest'])
-        info_dct['name'] = instance_uuid
+        info_dct.update(on_config_info(vm['config']))
+        info_dct.update(on_runtime_info(vm['runtime']))
+        info_dct['name'] = vm['config'].instanceUuid
         info_dct['instanceName'] = vm['name']
         guests.append(info_dct)
-
-        # INFO
-        vm['instanceUuid'] = instance_uuid
 
         # SNAPSHOTS
         if 'snapshot' in vm:
@@ -278,33 +254,6 @@ async def check_host_vms(
                             'capacityInBytes']
                 virtual_disks.append(disk_dct)
 
-        if 'runtime' in vm and vm['runtime']:
-            runtime_dct = on_runtime_info(vm['runtime'])
-            runtime_dct['name'] = instance_uuid
-            runtime_dct['fqdn'] = fqdn
-            runtimes.append(runtime_dct)
-
-            moref = vm['runtime'].host
-            hyp = hypervisors_lookup.get(moref)
-            if hyp:
-                host_dct = {
-                    **on_host_summary(hyp['summary']),
-                    **on_config_summary(hyp['summary'].config),
-                    **on_about_info(hyp['summary'].config.product),
-                    'productName': hyp['summary'].config.product.name,
-                    'name': hyp['name'],
-                }
-                hypervisors.append(host_dct)
-
-                runtime_dct['currentHypervisor'] = hyp['name']
-                info_dct['currentHypervisor'] = hyp['name']
-
-        # CONFIG
-        cfg_dct = on_config_info(vm['config'])
-        cfg_dct['name'] = instance_uuid
-        cfg_dct['fqdn'] = fqdn
-        guest_configs.append(cfg_dct)
-
     guest_count = [{
         'name': 'guestCount',
         'guestCount': len(guests),
@@ -315,11 +264,8 @@ async def check_host_vms(
 
     return {
         'guests': guests,
-        'guestConfigs': guest_configs,
         'guestCount': guest_count,
-        'hypervisors': hypervisors,
         'virtualDisks': virtual_disks,
         'snapshots': snapshots,
-        'runtimes': runtimes,
         'virtualStorage': list(virtual_storage_capacities.values())
     }
