@@ -52,6 +52,38 @@ def on_hardware_summary(obj):
     }
 
 
+def on_about_info(obj):
+    # vim.AboutInfo
+    return {
+        'apiType': obj.apiType,  # str
+        'apiVersion': obj.apiVersion,  # str
+        'build': obj.build,  # str
+        'fullName': obj.fullName,  # str
+        'instanceUuid': obj.instanceUuid,  # str
+        'licenseProductName': obj.licenseProductName,  # str
+        'licenseProductVersion': obj.licenseProductVersion,  # str
+        'localeBuild': obj.localeBuild,  # str
+        'localeVersion': obj.localeVersion,  # str
+        'name': obj.name,  # str
+        'osType': obj.osType,  # str
+        'patchLevel': obj.patchLevel,  # str
+        'productLineId': obj.productLineId,  # int
+        'vendor': obj.vendor,  # str
+        'version': obj.version,  # str
+    }
+
+
+def on_config_summary(obj):
+    # vim.host.Summary.ConfigSummary
+    return {
+        'faultToleranceEnabled': obj.faultToleranceEnabled,  # bool
+        'name': obj.name,  # str
+        'port': obj.port,  # int
+        'sslThumbprint': obj.sslThumbprint,  # int/null
+        'vmotionEnabled': obj.vmotionEnabled,  # int
+    }
+
+
 def fmt_summary(summary) -> dict:
     output = {}
     output['stats'] = [on_quick_stats(summary.quickStats)]
