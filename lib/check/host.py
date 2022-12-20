@@ -1,8 +1,6 @@
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
 from ..utils import datetime_to_timestamp
-from ..utils import on_about_info
-from ..utils import on_config_summary
 from ..vmwarequery import vmwarequery
 
 
