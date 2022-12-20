@@ -83,8 +83,8 @@ def on_config_info(obj):
         'cpuHotRemoveEnabled': obj.cpuHotRemoveEnabled,  # bool
         'firmware': obj.firmware,  # str
         'guestAutoLockEnabled': obj.guestAutoLockEnabled,  # bool
-        'guestConfigFullName': obj.guestFullName,  # str
-        'guestConfigId': obj.guestId,  # str
+        'guestFullNameConfig': obj.guestFullName,  # str
+        'guestIdConfig': obj.guestId,  # str
         'hotPlugMemoryIncrementSize': obj.hotPlugMemoryIncrementSize,  # str
         'hotPlugMemoryLimit': obj.hotPlugMemoryLimit,  # str
         'instanceUuid': obj.instanceUuid,  # str
