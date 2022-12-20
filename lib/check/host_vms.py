@@ -83,8 +83,8 @@ def on_config_info(obj):
         'cpuHotRemoveEnabled': obj.cpuHotRemoveEnabled,  # bool
         'firmware': obj.firmware,  # str
         'guestAutoLockEnabled': obj.guestAutoLockEnabled,  # bool
-        'guestFullName': obj.guestFullName,  # str
-        'guestId': obj.guestId,  # str
+        'guestConfigFullName': obj.guestFullName,  # str
+        'guestConfigId': obj.guestId,  # str
         'hotPlugMemoryIncrementSize': obj.hotPlugMemoryIncrementSize,  # str
         'hotPlugMemoryLimit': obj.hotPlugMemoryLimit,  # str
         'instanceUuid': obj.instanceUuid,  # str
@@ -170,6 +170,8 @@ def snapshot_flat(snapshots, vm_name):
         yield snapshot_dct
         for item in snapshot_flat(
                 snapshot.childSnapshotList, vm_name):
+            item['parentSnapshotName'] = snapshot.name
+            item['parentSnapshotId'] = snapshot.id
             yield item
 
 
