@@ -40,5 +40,5 @@ async def check_config_issues(
     ]
 
     return {
-        'configIssue': issues
+        'configIssues': issues
     }
