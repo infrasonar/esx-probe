@@ -120,7 +120,7 @@ def on_virtual_disk_backing_info(obj):
     # vim.vm.device.VirtualDisk.FlatVer2BackingInfo
     return {
         'changeId': obj.changeId,  # str/null
-        'contentId': obj.contentId,  # str
+        'contentId': obj.contentId,  # str/null
         'deltaDiskFormat': obj.deltaDiskFormat,  # str
         'deltaDiskFormatVariant': obj.deltaDiskFormatVariant,  # str
         'deltaGrainSize': obj.deltaGrainSize,  # int
