@@ -71,7 +71,7 @@ def on_virtual_hardware(obj):
 
 
 def on_config_info(obj):
-    # vim.vm.ConfigSpec
+    # vim.vm.ConfigInfo
     return {
         **on_virtual_hardware(obj.hardware),
         'alternateGuestName': obj.alternateGuestName,  # str

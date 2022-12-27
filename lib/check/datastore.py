@@ -29,7 +29,7 @@ async def check_datastore(
             'maintenanceMode': summary.val.maintenanceMode,  # str/null
             'multipleHostAccess': summary.val.multipleHostAccess,  # bool/null
             'type': summary.val.type,  # str
-            'uncommitted': summary.val.uncommitted,  # int
+            'uncommitted': summary.val.uncommitted,  # int/null
             'url': summary.val.url,  # str
             'maxFileSize': info.val.maxFileSize,  # int
             'maxMemoryFileSize': getattr(
