@@ -21,7 +21,7 @@ if __name__ == '__main__':
         'hardwareStatus': check_hardware_status,
         'host': check_host,
         'hostVMs': check_host_vms,
-        'licences': check_licenses,
+        'licenses': check_licenses,
         'network': check_network,
         'sensor': check_sensor,
     }

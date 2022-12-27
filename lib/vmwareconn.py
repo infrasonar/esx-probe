@@ -8,6 +8,11 @@ from .asset_cache import AssetCache
 MAX_CONN_AGE = 900
 
 
+def get_alarms(ip4, username, password):
+    content = _get_content(ip4, username, password)
+    return content.rootFolder.triggeredAlarmState
+
+
 def get_data(ip4, username, password, obj_type, properties):
     content = _get_content(ip4, username, password)
     data = _query_view(

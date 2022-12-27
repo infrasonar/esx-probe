@@ -1,37 +1,34 @@
 from libprobe.asset import Asset
-from pyVmomi import vim  # type: ignore
 from ..utils import datetime_to_timestamp
-from ..vmwarequery import vmwarequery
+from ..vmwarequery import vmwarequery_alarms
 
 
 async def check_alarms(
         asset: Asset,
         asset_config: dict,
         check_config: dict) -> dict:
-    result = await vmwarequery(
+    result = await vmwarequery_alarms(
         asset,
         asset_config,
         check_config,
-        vim.HostSystem,
-        ['triggeredAlarmState'],
     )
 
     alarms = [
+        # vim.alarm.AlarmState
         {
-            'name': str(alarm.key),
-            'entityName': alarm.entity.name,
-            'alarmInfo': alarm.alarm.info.name,
-            'alarmDesc': alarm.alarm.info.description,
-            'acknowledged': alarm.acknowledged,
-            'acknowledgedByUser': alarm.acknowledgedByUser,
-            'acknowledgedTime': datetime_to_timestamp(alarm.acknowledgedTime),
-            'eventKey': alarm.eventKey,
-            'overallStatus': alarm.overallStatus,
-            'time': datetime_to_timestamp(alarm.time),
+            'name': alarm.key,  # str
+            'entityName': alarm.entity.name,  # str
+            'alarmInfo': alarm.alarm.info.name,  # str
+            'alarmDesc': alarm.alarm.info.description,  # str
+            'acknowledged': alarm.acknowledged,  # bool
+            'acknowledgedByUser': alarm.acknowledgedByUser,  # str/null
+            'acknowledgedTime':
+                datetime_to_timestamp(alarm.acknowledgedTime),  # int/null
+            'eventKey': alarm.eventKey,  # int/null
+            'overallStatus': alarm.overallStatus,  # str
+            'time': datetime_to_timestamp(alarm.time),  # int
         }
-        for item in result
-        for prop in item.propSet
-        for alarm in prop.val
+        for alarm in result
     ]
 
     return {
