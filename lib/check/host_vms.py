@@ -164,7 +164,7 @@ def on_snapshot_tree(obj):
 def snapshot_flat(snapshots, vm_name):
     for snapshot in snapshots:
         snapshot_dct = on_snapshot_tree(snapshot)
-        snapshot_dct['name'] = str(snapshot.id)
+        snapshot_dct['name'] = f'{vm_name}/{snapshot.id}'
         snapshot_dct['snapshotName'] = snapshot.name
         snapshot_dct['snapshotId'] = snapshot.id
         snapshot_dct['vm'] = vm_name
@@ -230,15 +230,12 @@ async def check_host_vms(
         info_dct.update(on_runtime_info(vm['runtime']))
         info_dct['name'] = instanceuuid = vm['config'].instanceUuid
         info_dct['instanceName'] = vm['name']
-        info_dct['cpuReadiness'] = [
-            value
-            for instance, value in vms_perf[instanceuuid][('cpu', 'readiness')]
-            if instance  # filter out total
-        ] if instanceuuid in vms_perf else []
-        info_dct['diskBusResets'] = [
-            value
-            for _, value in vms_perf[instanceuuid][('disk', 'busResets')]
-        ] if instanceuuid in vms_perf else []
+        perf = vms_perf.get(instanceuuid)
+        if perf is not None:
+            path = ('cpu', 'readiness')
+            total_name = ''
+            info_dct['cpuReadiness'] = perf[path].get(total_name)
+
         guests.append(info_dct)
 
         # SNAPSHOTS
@@ -256,6 +253,13 @@ async def check_host_vms(
                 datastore = stores_lookup[device.backing.datastore]
                 datastore_name = datastore['name']
                 disk_dct['datastore'] = datastore['name']
+
+                if perf is not None:
+                    for partition in datastore['info'].vmfs.extent:
+                        path = ('disk', 'busResets')
+                        disk_name = partition.diskName
+                        disk_dct['busResets'] = perf[path].get(disk_name)
+
                 if hasattr(device, 'deviceInfo') and device.deviceInfo:
                     disk_dct['label'] = device.deviceInfo.label
                 if disk_dct['capacityInBytes'] and \

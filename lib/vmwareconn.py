@@ -49,14 +49,14 @@ def get_perf(ip4, username, password, obj_type, metrics):
 
         spec = vim.PerformanceManager.QuerySpec(maxSample=1, entity=child,
                                                 metricId=metric_id)
-        results[child.config.instanceUuid] = result = {m: [] for m in metrics}
+        results[child.config.instanceUuid] = result = {m: {} for m in metrics}
         for stat in perf_manager.QueryStats(querySpec=[spec]):
             for val in stat.value:
                 counter = counters_lk[val.id.counterId]
                 path = counter.groupInfo.key, counter.nameInfo.key
                 instance = val.id.instance
                 value = val.value[0]
-                result[path].append((instance, value))
+                result[path][instance] = value
 
     view_ref.Destroy()
     return results
