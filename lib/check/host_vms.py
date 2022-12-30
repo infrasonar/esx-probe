@@ -39,7 +39,7 @@ def on_runtime_info(obj):
         'consolidationNeeded': obj.consolidationNeeded,  # str
         'cryptoState': obj.cryptoState,  # str/null
         'faultToleranceState': obj.faultToleranceState,  # str
-        'instantCloneFrozen': obj.instantCloneFrozen,  # bool
+        'instantCloneFrozen': obj.instantCloneFrozen,  # bool/null
         'maxCpuUsage': obj.maxCpuUsage,  # int
         'maxMemoryUsage': obj.maxMemoryUsage,  # int
         'memoryOverhead': obj.memoryOverhead,  # int
@@ -78,7 +78,7 @@ def on_config_info(obj):
         'annotation': obj.annotation,  # str
         'changeTrackingEnabled': obj.changeTrackingEnabled,  # bool
         'changeVersion': obj.changeVersion,  # str
-        'createDate': datetime_to_timestamp(obj.createDate),
+        'createDate': datetime_to_timestamp(obj.createDate),  # int/null
         'cpuHotAddEnabled': obj.cpuHotAddEnabled,  # bool
         'cpuHotRemoveEnabled': obj.cpuHotRemoveEnabled,  # bool
         'firmware': obj.firmware,  # str
@@ -126,7 +126,7 @@ def on_virtual_disk_backing_info(obj):
         'deltaGrainSize': obj.deltaGrainSize,  # int
         'digestEnabled': obj.digestEnabled,  # bool
         'diskMode': obj.diskMode,  # str
-        'eagerlyScrub': obj.eagerlyScrub,  # bool
+        'eagerlyScrub': obj.eagerlyScrub,  # bool/null
         'fileName': obj.fileName,  # str
         'sharing': obj.sharing,  # str
         'split': obj.split,  # bool
