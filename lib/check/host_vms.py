@@ -21,7 +21,7 @@ def on_guest_info(obj):
         'interactiveGuestOperationsReady':
             obj.interactiveGuestOperationsReady,  # bool
         'ipAddress': obj.ipAddress,  # str
-        'toolsInstallType': obj.toolsInstallType,  # str
+        'toolsInstallType': obj.toolsInstallType,  # str/null
         'toolsRunningStatus': obj.toolsRunningStatus,  # str
         'toolsStatus': obj.toolsStatus,  # str
         'toolsVersion': obj.toolsVersion,  # str
