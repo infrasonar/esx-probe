@@ -202,7 +202,7 @@ async def check_host_vms(
         asset_config,
         check_config,
         vim.VirtualMachine,
-        [('cpu', 'readiness'), ('disk', 'busResets')],
+        [('cpu', 'ready'), ('disk', 'busResets')],
     )
 
     stores_lookup = {
@@ -232,9 +232,12 @@ async def check_host_vms(
         info_dct['instanceName'] = vm['name']
         perf = vms_perf.get(instanceuuid)
         if perf is not None:
-            path = ('cpu', 'readiness')
+            path = ('cpu', 'ready')
             total_name = ''
-            info_dct['cpuReadiness'] = perf[path].get(total_name)
+            total_val = perf[path].get(total_name)
+            if total_val is not None:
+                sample_period = 20_000  # default (milliseconds)
+                info_dct['cpuReadiness'] = total_val / sample_period * 100
 
             # number of disk bus reset commands by the virtual machine
             path = ('disk', 'busResets')
