@@ -1,3 +1,4 @@
+from itertools import chain
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
 from ..vmwarequery import vmwarequery
@@ -22,7 +23,7 @@ async def check_hardware_status(
         }
         for item in result
         for prop in item.propSet
-        for si in (
+        for si in chain(
              prop.val.memoryStatusInfo,
              prop.val.cpuStatusInfo,
              prop.val.storageStatusInfo,
