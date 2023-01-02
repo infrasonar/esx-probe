@@ -16,16 +16,17 @@ async def check_sensor(
     )
 
     sensors = [
+        # vim.host.NumericSensorInfo
         {
-            'name': prop_val.name,
-            'healthState': prop_val.healthState.key,
-            'readingValue': prop_val.currentReading * (
+            'name': prop_val.name,  # str
+            'healthState': prop_val.healthState.key,  # str
+            'readingValue': prop_val.currentReading * float(
                 10 ** prop_val.unitModifier),
-            'baseUnits': prop_val.baseUnits,
-            'currentReading': prop_val.currentReading,
-            'rateUnits': prop_val.rateUnits,
-            'sensorType': prop_val.sensorType,
-            'unitModifier': prop_val.unitModifier,
+            'baseUnits': prop_val.baseUnits,  # str
+            'currentReading': prop_val.currentReading,  # int
+            'rateUnits': prop_val.rateUnits,  # str
+            'sensorType': prop_val.sensorType,  # str
+            'unitModifier': prop_val.unitModifier,  # int
         }
         for item in result
         for prop in item.propSet
