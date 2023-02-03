@@ -56,7 +56,7 @@ def get_perf(ip4, username, password, obj_type, metrics):
                 counter = counters_lk[val.id.counterId]
                 path = counter.groupInfo.key, counter.nameInfo.key
                 instance = val.id.instance
-                value = val.value[0]
+                value = val.value
                 result[path][instance] = value
 
     view_ref.Destroy()
