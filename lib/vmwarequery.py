@@ -9,6 +9,8 @@ from typing import List, Tuple
 
 from .vmwareconn import get_alarms, get_data, get_perf, drop_connnection
 
+DEFAULT_INTERVAL = 300
+
 
 async def vmwarequery_alarms(
         asset: Asset,
@@ -65,6 +67,7 @@ async def vmwarequery_perf(
     if None in (username, password):
         logging.error(f'missing credentails for {asset}')
         raise IgnoreResultException
+    interval = check_config.get('_interval', DEFAULT_INTERVAL)
 
     try:
         result = await asyncio.get_event_loop().run_in_executor(
@@ -74,7 +77,8 @@ async def vmwarequery_perf(
             username,
             password,
             obj_type,
-            metrics
+            metrics,
+            interval
         )
     except (vim.fault.InvalidLogin,
             vim.fault.NotAuthenticated):

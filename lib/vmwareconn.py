@@ -1,5 +1,6 @@
 import logging
 import ssl
+from datetime import datetime, timedelta
 from pyVmomi import vim, vmodl  # type: ignore
 from pyVim import connect
 
@@ -9,12 +10,14 @@ MAX_CONN_AGE = 900
 
 
 def get_alarms(ip4, username, password):
-    content = _get_content(ip4, username, password)
+    conn = _get_conn(ip4, username, password)
+    content = conn.RetrieveContent()
     return content.rootFolder.triggeredAlarmState
 
 
 def get_data(ip4, username, password, obj_type, properties):
-    content = _get_content(ip4, username, password)
+    conn = _get_conn(ip4, username, password)
+    content = conn.RetrieveContent()
     data = _query_view(
         content=content,
         obj_type=obj_type,
@@ -23,8 +26,10 @@ def get_data(ip4, username, password, obj_type, properties):
     return data
 
 
-def get_perf(ip4, username, password, obj_type, metrics):
-    content = _get_content(ip4, username, password)
+def get_perf(ip4, username, password, obj_type, metrics, interval):
+    conn = _get_conn(ip4, username, password)
+    content = conn.RetrieveContent()
+    content_time = conn.CurrentTime()
     view_ref = content.viewManager.CreateContainerView(
         container=content.rootFolder, type=[obj_type], recursive=True)
 
@@ -47,9 +52,13 @@ def get_perf(ip4, username, password, obj_type, metrics):
             # nothing to query
             continue
 
-        spec = vim.PerformanceManager.QuerySpec(intervalId=20, maxSample=15,
+        end_time = content_time
+        start_time = content_time - timedelta(seconds=interval + 1)
+        spec = vim.PerformanceManager.QuerySpec(intervalId=20,
                                                 entity=child,
-                                                metricId=metric_id)
+                                                etricId=metric_id,
+                                                startTime=start_time,
+                                                endTime=end_time)
         results[child.config.instanceUuid] = result = {m: {} for m in metrics}
         for stat in perf_manager.QueryStats(querySpec=[spec]):
             for val in stat.value:
@@ -70,18 +79,18 @@ def drop_connnection(host):
         conn._stub.DropConnections()
 
 
-def _get_content(host, username, password):
+def _get_conn(host, username, password):
     conn, expired = AssetCache.get_value((host, 'connection'))
     if expired:
         conn._stub.DropConnections()
     elif conn:
-        return conn.RetrieveContent()
+        return conn
 
     conn = _get_connection(host, username, password)
     if not conn:
         raise ConnectionError('Unable to connect')
     AssetCache.set_value((host, 'connection'), conn, MAX_CONN_AGE)
-    return conn.RetrieveContent()
+    return conn
 
 
 def _get_connection(host, username, password):
