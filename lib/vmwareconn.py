@@ -56,7 +56,7 @@ def get_perf(ip4, username, password, obj_type, metrics, interval):
         start_time = content_time - timedelta(seconds=interval + 1)
         spec = vim.PerformanceManager.QuerySpec(intervalId=20,
                                                 entity=child,
-                                                etricId=metric_id,
+                                                metricId=metric_id,
                                                 startTime=start_time,
                                                 endTime=end_time)
         results[child.config.instanceUuid] = result = {m: {} for m in metrics}

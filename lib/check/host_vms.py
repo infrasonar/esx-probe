@@ -239,7 +239,10 @@ async def check_host_vms(
                 info_dct['cpuReadiness'] = max(values) / 20_000 * 100
             # number of disk bus reset commands by the virtual machine
             path = ('disk', 'busResets')
-            info_dct['busResets'] = sum(perf[path].values())
+            info_dct['busResets'] = sum(
+                sum(values)
+                for values in perf[path].values()
+            )
 
         guests.append(info_dct)
 
