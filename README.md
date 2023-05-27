@@ -3,6 +3,8 @@
 
 # InfraSonar VMware ESX Probe
 
+Documentation: https://docs.infrasonar.com/collectors/probes/vmware/esx/
+
 ## Environment variable
 
 Variable            | Default                        | Description
