@@ -1,8 +1,12 @@
 import logging
+import os
 from libprobe.asset import Asset
 from pyVmomi import vim  # type: ignore
 from ..utils import datetime_to_timestamp
 from ..vmwarequery import vmwarequery, vmwarequery_perf
+
+
+COLLECT_PERFORMANCE_METRICS = int(os.getenv('COLLECT_PERFORMANCE_METRICS', '1'))
 
 
 def on_guest_info(obj):
@@ -197,13 +201,16 @@ async def check_host_vms(
         ['name', 'config', 'guest', 'snapshot', 'runtime'],
     )
 
-    vms_perf = await vmwarequery_perf(
-        asset,
-        asset_config,
-        check_config,
-        vim.VirtualMachine,
-        [('cpu', 'ready'), ('disk', 'busResets')],
-    )
+    if COLLECT_PERFORMANCE_METRICS:
+        vms_perf = await vmwarequery_perf(
+            asset,
+            asset_config,
+            check_config,
+            vim.VirtualMachine,
+            [('cpu', 'ready'), ('disk', 'busResets')],
+        )
+    else:
+        vms_perf = {}
 
     stores_lookup = {
         store.obj: {p.name: p.val for p in store.propSet} for store in stores_}
@@ -230,6 +237,8 @@ async def check_host_vms(
         info_dct.update(on_runtime_info(vm['runtime']))
         info_dct['name'] = instanceuuid = vm['config'].instanceUuid
         info_dct['instanceName'] = vm['name']
+
+        # aggregate performance metrics per guest
         perf = vms_perf.get(instanceuuid)
         if perf is not None:
             path = ('cpu', 'ready')
