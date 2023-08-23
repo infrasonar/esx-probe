@@ -6,12 +6,12 @@ from libprobe.exceptions import CheckException
 from pyVmomi import vim  # type: ignore
 from typing import List
 
-from .vmwareconn import get_alarms, get_data, drop_connnection
+from .vmwareconn import get_content, get_data, drop_connnection
 
 DEFAULT_INTERVAL = 300
 
 
-async def vmwarequery_alarms(
+async def vmwarequery_content(
         asset: Asset,
         asset_config: dict,
         check_config: dict) -> list:
@@ -27,7 +27,7 @@ async def vmwarequery_alarms(
     try:
         result = await asyncio.get_event_loop().run_in_executor(
             None,
-            get_alarms,
+            get_content,
             address,
             username,
             password,
