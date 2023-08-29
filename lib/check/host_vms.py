@@ -32,6 +32,7 @@ async def check_host_vms(
 
     guests = []
     running_guest_count = 0
+    virtual_storage_dct = {}
     for moref, vm in vms_retrieved.items():
         if 'config' not in vm:
             logging.info(
@@ -52,21 +53,23 @@ async def check_host_vms(
 
         for device in vm['config'].hardware.device:
             if isinstance(device, vim.vm.device.VirtualDisk):
+                datastore_name = device.backing.datastore.name
                 datastore = stores_lookup[device.backing.datastore]
-                if 'virtualCapacity' not in datastore:
-                    datastore['virtualCapacity'] = 0
-                datastore['virtualCapacity'] += device.capacityInBytes
+                if datastore_name not in virtual_storage_dct:
+                    virtual_storage_dct[datastore_name] = {
+                        'name': datastore_name,
+                        'actualCapacity': datastore['summary.capacity'],
+                        'virtualCapacity': 0
+                    }
+                virtual_storage_dct[datastore_name]['virtualCapacity'] += \
+                    device.capacityInBytes
 
     guest_count = [{
         'name': 'guestCount',
         'guestCount': len(guests),
         'runningGuestCount': running_guest_count
     }]
-    virtual_storage = [{
-        'name': ds['name'],
-        'virtualCapacity': ds['virtualCapacity'],
-        'actualCapacity': ds['summary.capacity']
-    } for ds in stores_lookup.values()]
+    virtual_storage = list(virtual_storage_dct.values())
 
     return {
         'guests': guests,
