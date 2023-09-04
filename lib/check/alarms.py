@@ -1,13 +1,13 @@
 from libprobe.asset import Asset
 from ..utils import datetime_to_timestamp
-from ..vmwarequery import vmwarequery_alarms
+from ..vmwarequery import vmwarequery_content
 
 
 async def check_alarms(
         asset: Asset,
         asset_config: dict,
         check_config: dict) -> dict:
-    result = await vmwarequery_alarms(
+    content = await vmwarequery_content(
         asset,
         asset_config,
         check_config,
@@ -28,7 +28,7 @@ async def check_alarms(
             'overallStatus': alarm.overallStatus,  # str
             'time': datetime_to_timestamp(alarm.time),  # int
         }
-        for alarm in result
+        for alarm in content.rootFolder.triggeredAlarmState
     ]
 
     return {
