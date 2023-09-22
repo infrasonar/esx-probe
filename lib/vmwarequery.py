@@ -21,7 +21,7 @@ async def vmwarequery_content(
     username = asset_config.get('username')
     password = asset_config.get('password')
     if None in (username, password):
-        msg = 'missing credentails'
+        msg = 'missing credentials'
         raise CheckException(msg)
 
     try:
