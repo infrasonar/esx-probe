@@ -57,7 +57,6 @@ async def check_datastore(
                 'blockSize': vmfs.blockSize,
                 'unmapGranularity': vmfs.unmapGranularity,  # int/null
                 'unmapPriority': vmfs.unmapPriority,  # str/null
-                'unmapBandwidthSpec': vmfs.unmapBandwidthSpec,
                 'maxBlocks': vmfs.maxBlocks,
                 'majorVersion': vmfs.majorVersion,
                 'uuid': vmfs.uuid,
