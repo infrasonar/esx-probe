@@ -28,7 +28,7 @@ async def vmwarequery_content(
         )
 
     try:
-        result = await asyncio.get_event_loop().run_in_executor(
+        result = await asyncio.get_running_loop().run_in_executor(
             None,
             get_content,
             address,
@@ -76,7 +76,7 @@ async def vmwarequery(
         )
 
     try:
-        result = await asyncio.get_event_loop().run_in_executor(
+        result = await asyncio.get_running_loop().run_in_executor(
             None,
             get_data,
             address,
