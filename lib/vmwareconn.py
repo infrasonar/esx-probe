@@ -1,6 +1,6 @@
 import logging
 import ssl
-from pyVmomi import vmodl  # type: ignore
+from pyVmomi import vmodl
 from pyVim import connect
 
 from .asset_cache import AssetCache
@@ -34,10 +34,11 @@ def drop_connnection(host):
 
 def _get_conn(host, username, password):
     conn, expired = AssetCache.get_value((host, 'connection'))
-    if expired:
-        conn._stub.DropConnections()
-    elif conn:
-        return conn
+    if conn:
+        if expired:
+            conn._stub.DropConnections()
+        else:
+            return conn
 
     conn = _get_connection(host, username, password)
     if not conn:
@@ -63,21 +64,23 @@ def _query_view(content, obj_type, properties):
         container=content.rootFolder, type=[obj_type], recursive=True)
     collector = content.propertyCollector
 
-    obj_spec = vmodl.query.PropertyCollector.ObjectSpec()
+    obj_spec = vmodl.query.PropertyCollector.ObjectSpec()  # type: ignore
     obj_spec.obj = view_ref
     obj_spec.skip = True
 
     # Create a traversal specification to identify the
     # path for collection
-    traversal_spec = vmodl.query.PropertyCollector.TraversalSpec()
+    traversal_spec = \
+        vmodl.query.PropertyCollector.TraversalSpec()  # type: ignore
     traversal_spec.name = 'traverseEntities'
-    traversal_spec.path = 'view'
+    traversal_spec.path = 'view'  # type: ignore
     traversal_spec.skip = False
     traversal_spec.type = view_ref.__class__
     obj_spec.selectSet = [traversal_spec]
 
     # Identify the properties to the retrieved
-    property_spec = vmodl.query.PropertyCollector.PropertySpec()
+    property_spec = \
+        vmodl.query.PropertyCollector.PropertySpec()  # type: ignore
     property_spec.type = obj_type
     property_spec.all = False
 
@@ -85,9 +88,14 @@ def _query_view(content, obj_type, properties):
 
     # Add the object and property specification to the
     # property filter specification
-    filter_spec = vmodl.query.PropertyCollector.FilterSpec()
+    filter_spec = vmodl.query.PropertyCollector.FilterSpec()  # type: ignore
     filter_spec.objectSet = [obj_spec]
     filter_spec.propSet = [property_spec]
 
     # Retrieve properties
     return collector.RetrieveContents([filter_spec])
+
+
+# NOTE type ignore
+# missing import in pyVmomi.vmodl.__init__.pyi
+# bad code in pyVmomi.VmomiSupport.py (bad type alias, six is stupid)
