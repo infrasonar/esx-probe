@@ -73,7 +73,7 @@ def _query_view(content, obj_type, properties):
     traversal_spec = \
         vmodl.query.PropertyCollector.TraversalSpec()  # type: ignore
     traversal_spec.name = 'traverseEntities'
-    traversal_spec.path = 'view'  # type: ignore
+    traversal_spec.path = 'view'
     traversal_spec.skip = False
     traversal_spec.type = view_ref.__class__
     obj_spec.selectSet = [traversal_spec]
@@ -98,4 +98,3 @@ def _query_view(content, obj_type, properties):
 
 # NOTE type ignore
 # missing import in pyVmomi.vmodl.__init__.pyi
-# bad code in pyVmomi.VmomiSupport.py (bad type alias, six is stupid)
