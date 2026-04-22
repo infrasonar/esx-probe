@@ -1,5 +1,6 @@
 from libprobe.asset import Asset
-from pyVmomi import vim  # type: ignore
+from libprobe.check import Check
+from pyVmomi import vim
 from ..utils import datetime_to_timestamp
 from ..vmwarequery import vmwarequery
 
@@ -122,21 +123,23 @@ def fmt_summary(summary) -> dict:
     return output
 
 
-async def check_host(
-        asset: Asset,
-        asset_config: dict,
-        check_config: dict) -> dict:
-    result = await vmwarequery(
-        asset,
-        asset_config,
-        check_config,
-        vim.HostSystem,
-        ['summary']
-    )
+class CheckHost(Check):
+    key = 'host'
 
-    return {
-        tp_name: tp
-        for item in result
-        for prop in item.propSet
-        for tp_name, tp in fmt_summary(prop.val).items()
-    }
+    @staticmethod
+    async def run(asset: Asset, local_config: dict, config: dict) -> dict:
+
+        result = await vmwarequery(
+            asset,
+            local_config,
+            config,
+            vim.HostSystem,
+            ['summary']
+        )
+
+        return {
+            tp_name: tp
+            for item in result
+            for prop in item.propSet
+            for tp_name, tp in fmt_summary(prop.val).items()
+        }

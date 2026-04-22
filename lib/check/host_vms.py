@@ -1,79 +1,83 @@
 import logging
 from libprobe.asset import Asset
+from libprobe.check import Check
 from pyVmomi import vim
 from ..vmwarequery import vmwarequery
 
 
-async def check_host_vms(
-        asset: Asset,
-        asset_config: dict,
-        check_config: dict) -> dict:
+class CheckHostVMs(Check):
+    key = 'hostVMs'
 
-    stores_ = await vmwarequery(
-        asset,
-        asset_config,
-        check_config,
-        vim.Datastore,
-        ['name', 'summary.capacity'],
-    )
+    @staticmethod
+    async def run(asset: Asset, local_config: dict, config: dict) -> dict:
 
-    vms_ = await vmwarequery(
-        asset,
-        asset_config,
-        check_config,
-        vim.VirtualMachine,
-        ['name', 'config', 'guest', 'runtime'],
-    )
+        stores_ = await vmwarequery(
+            asset,
+            local_config,
+            config,
+            vim.Datastore,
+            ['name', 'summary.capacity'],
+        )
 
-    stores_lookup = {
-        store.obj: {p.name: p.val for p in store.propSet} for store in stores_}
-    vms_retrieved = {
-        vm.obj: {p.name: p.val for p in vm.propSet} for vm in vms_}
+        vms_ = await vmwarequery(
+            asset,
+            local_config,
+            config,
+            vim.VirtualMachine,
+            ['name', 'config', 'guest', 'runtime'],
+        )
 
-    guests = []
-    running_guest_count = 0
-    virtual_storage_dct = {}
-    for moref, vm in vms_retrieved.items():
-        if 'config' not in vm:
-            logging.info(
-                f'Skipping VM {vm} because it is missing config data'
-            )
-            continue
-        if vm['config'].template:
-            continue
+        stores_lookup = {
+            store.obj: {p.name: p.val
+                        for p in store.propSet} for store in stores_}
+        vms_retrieved = {
+            vm.obj: {p.name: p.val for p in vm.propSet} for vm in vms_}
 
-        guests.append({
-            'name': vm['config'].instanceUuid,
-            'instanceName': vm['name'],
-            'powerState': vm['runtime'].powerState
-        })
+        guests = []
+        running_guest_count = 0
+        virtual_storage_dct = {}
+        for moref, vm in vms_retrieved.items():
+            if 'config' not in vm:
+                logging.info(
+                    f'Skipping VM {vm} because it is missing config data'
+                )
+                continue
+            if vm['config'].template:
+                continue
 
-        if vm['guest'].guestState == 'running':
-            running_guest_count += 1
+            guests.append({
+                'name': vm['config'].instanceUuid,
+                'instanceName': vm['name'],
+                'powerState': vm['runtime'].powerState
+            })
 
-        for device in vm['config'].hardware.device:
-            if isinstance(device, vim.vm.device.VirtualDisk):
-                datastore_name = device.backing.datastore.name  # type: ignore
-                datastore = \
-                    stores_lookup[device.backing.datastore]  # type: ignore
-                if datastore_name not in virtual_storage_dct:
-                    virtual_storage_dct[datastore_name] = {
-                        'name': datastore_name,
-                        'actualCapacity': datastore['summary.capacity'],
-                        'virtualCapacity': 0
-                    }
-                virtual_storage_dct[datastore_name]['virtualCapacity'] += \
-                    device.capacityInBytes
+            if vm['guest'].guestState == 'running':
+                running_guest_count += 1
 
-    guest_count = [{
-        'name': 'guestCount',
-        'guestCount': len(guests),
-        'runningGuestCount': running_guest_count
-    }]
-    virtual_storage = list(virtual_storage_dct.values())
+            for device in vm['config'].hardware.device:
+                if isinstance(device, vim.vm.device.VirtualDisk):
+                    datastore_name = \
+                        device.backing.datastore.name  # type: ignore
+                    datastore = \
+                        stores_lookup[device.backing.datastore]  # type: ignore
+                    if datastore_name not in virtual_storage_dct:
+                        virtual_storage_dct[datastore_name] = {
+                            'name': datastore_name,
+                            'actualCapacity': datastore['summary.capacity'],
+                            'virtualCapacity': 0
+                        }
+                    virtual_storage_dct[datastore_name]['virtualCapacity'] += \
+                        device.capacityInBytes
 
-    return {
-        'guests': guests,
-        'guestCount': guest_count,
-        'virtualStorage': virtual_storage,
-    }
+        guest_count = [{
+            'name': 'guestCount',
+            'guestCount': len(guests),
+            'runningGuestCount': running_guest_count
+        }]
+        virtual_storage = list(virtual_storage_dct.values())
+
+        return {
+            'guests': guests,
+            'guestCount': guest_count,
+            'virtualStorage': virtual_storage,
+        }
