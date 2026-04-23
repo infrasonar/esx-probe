@@ -6,6 +6,7 @@ from ..vmwarequery import vmwarequery
 
 class CheckCapabilities(Check):
     key = 'capabilities'
+    unchanged_eol = 14400
 
     @staticmethod
     async def run(asset: Asset, local_config: dict, config: dict) -> dict:

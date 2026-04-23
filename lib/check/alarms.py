@@ -6,6 +6,7 @@ from ..vmwarequery import vmwarequery_content
 
 class CheckAlarms(Check):
     key = 'alarms'
+    unchanged_eol = 14400
 
     @staticmethod
     async def run(asset: Asset, local_config: dict, config: dict) -> dict:

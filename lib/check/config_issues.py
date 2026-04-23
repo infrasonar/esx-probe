@@ -22,6 +22,7 @@ def fmt_issue(issue) -> dict:
 
 class CheckConfigIssues(Check):
     key = 'configIssues'
+    unchanged_eol = 14400
 
     @staticmethod
     async def run(asset: Asset, local_config: dict, config: dict) -> dict:
