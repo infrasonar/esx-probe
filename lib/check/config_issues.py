@@ -4,7 +4,7 @@ from pyVmomi import vim
 from ..vmwarequery import vmwarequery
 
 
-def fmt_issue(issue) -> dict:
+def fmt_issue(issue: vim.event.EventEx) -> dict:
     # vim.event.EventEx
 
     severity = getattr(issue, 'severity', None)  # str/null

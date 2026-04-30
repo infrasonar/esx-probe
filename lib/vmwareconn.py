@@ -1,6 +1,6 @@
 import logging
 import ssl
-from pyVmomi import vmodl  # type: ignore
+from pyVmomi import vim, vmodl  # type: ignore
 from pyVim import connect
 
 from .asset_cache import AssetCache
@@ -8,13 +8,14 @@ from .asset_cache import AssetCache
 MAX_CONN_AGE = 900
 
 
-def get_content(ip4, username, password):
+def get_content(ip4: str, username: str, password: str):
     conn = _get_conn(ip4, username, password)
     content = conn.RetrieveContent()
     return content
 
 
-def get_data(ip4, username, password, obj_type, properties):
+def get_data(ip4: str, username: str, password: str,
+             obj_type: type[vim.ManagedEntity], properties: list[str]):
     conn = _get_conn(ip4, username, password)
     content = conn.RetrieveContent()
     data = _query_view(
@@ -25,14 +26,14 @@ def get_data(ip4, username, password, obj_type, properties):
     return data
 
 
-def drop_connnection(host):
+def drop_connnection(host: str):
     conn, _ = AssetCache.get_value((host, 'connection'))
     if conn:
         AssetCache.drop((host, 'connection'))
         conn._stub.DropConnections()
 
 
-def _get_conn(host, username, password):
+def _get_conn(host: str, username: str, password: str):
     conn, expired = AssetCache.get_value((host, 'connection'))
     if conn:
         if expired:
@@ -47,7 +48,7 @@ def _get_conn(host, username, password):
     return conn
 
 
-def _get_connection(host, username, password):
+def _get_connection(host: str, username: str, password: str):
     logging.info(f'CONNECTING to {host}')
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     context.verify_mode = ssl.CERT_NONE
@@ -59,8 +60,9 @@ def _get_connection(host, username, password):
         connectionPoolTimeout=10)
 
 
-def _query_view(content, obj_type, properties):
-    view_ref = content.viewManager.CreateContainerView(
+def _query_view(content: vim.ServiceInstanceContent,
+                obj_type: type[vim.ManagedEntity], properties: list[str]):
+    view_ref = content.viewManager.CreateContainerView(  # type: ignore
         container=content.rootFolder, type=[obj_type], recursive=True)
     collector = content.propertyCollector
 
