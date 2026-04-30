@@ -1,6 +1,6 @@
 import logging
 import ssl
-from pyVmomi import vmodl
+from pyVmomi import vmodl  # type: ignore
 from pyVim import connect
 
 from .asset_cache import AssetCache
