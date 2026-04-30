@@ -66,14 +66,14 @@ def _query_view(content: vim.ServiceInstanceContent,
         container=content.rootFolder, type=[obj_type], recursive=True)
     collector = content.propertyCollector
 
-    obj_spec = vmodl.query.PropertyCollector.ObjectSpec()  # type: ignore
+    obj_spec = vmodl.query.PropertyCollector.ObjectSpec()
     obj_spec.obj = view_ref
     obj_spec.skip = True
 
     # Create a traversal specification to identify the
     # path for collection
     traversal_spec = \
-        vmodl.query.PropertyCollector.TraversalSpec()  # type: ignore
+        vmodl.query.PropertyCollector.TraversalSpec()
     traversal_spec.name = 'traverseEntities'
     traversal_spec.path = 'view'
     traversal_spec.skip = False
@@ -82,7 +82,7 @@ def _query_view(content: vim.ServiceInstanceContent,
 
     # Identify the properties to the retrieved
     property_spec = \
-        vmodl.query.PropertyCollector.PropertySpec()  # type: ignore
+        vmodl.query.PropertyCollector.PropertySpec()
     property_spec.type = obj_type
     property_spec.all = False
 
@@ -90,7 +90,7 @@ def _query_view(content: vim.ServiceInstanceContent,
 
     # Add the object and property specification to the
     # property filter specification
-    filter_spec = vmodl.query.PropertyCollector.FilterSpec()  # type: ignore
+    filter_spec = vmodl.query.PropertyCollector.FilterSpec()
     filter_spec.objectSet = [obj_spec]
     filter_spec.propSet = [property_spec]
 
