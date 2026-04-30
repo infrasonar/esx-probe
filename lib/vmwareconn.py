@@ -30,14 +30,14 @@ def drop_connnection(host: str):
     conn, _ = AssetCache.get_value((host, 'connection'))
     if conn:
         AssetCache.drop((host, 'connection'))
-        conn._stub.DropConnections()
+        conn._stub.DropConnections()  # type: ignore
 
 
 def _get_conn(host: str, username: str, password: str):
     conn, expired = AssetCache.get_value((host, 'connection'))
     if conn:
         if expired:
-            conn._stub.DropConnections()
+            conn._stub.DropConnections()  # type: ignore
         else:
             return conn
 

@@ -86,12 +86,13 @@ def on_config_summary(obj: vim.host.Summary.ConfigSummary):
 def fmt_summary(summary: vim.host.Summary) -> dict:
     output = {}
     output['stats'] = [on_quick_stats(summary.quickStats)]
-    output['hardware'] = [on_hardware_summary(summary.hardware)]
+    output['hardware'] = [
+        on_hardware_summary(summary.hardware)]  # type: ignore
     output['hardwareOther'] = [
         {
             'name': item.identifierType.key,
             'value': item.identifierValue}
-        for item in summary.hardware.otherIdentifyingInfo
+        for item in summary.hardware.otherIdentifyingInfo  # type: ignore
     ]
     output['feature'] = [
         {
@@ -103,7 +104,7 @@ def fmt_summary(summary: vim.host.Summary) -> dict:
     output['config'] = [on_config_summary(summary.config)]
     output['netstack'] = []
     output['nic'] = []
-    net_runtime_info = summary.runtime.networkRuntimeInfo
+    net_runtime_info = summary.runtime.networkRuntimeInfo  # type: ignore
     if net_runtime_info:
         for stackInfo in net_runtime_info.netStackInstanceRuntimeInfo:
             output['netstack'].append({
@@ -119,7 +120,7 @@ def fmt_summary(summary: vim.host.Summary) -> dict:
                     'name': stackInfo.netStackInstanceKey + ':' + nic,
                     'nic': nic
                 })
-    output['runtime'] = [on_runtime_info(summary.runtime)]
+    output['runtime'] = [on_runtime_info(summary.runtime)]  # type: ignore
     return output
 
 
