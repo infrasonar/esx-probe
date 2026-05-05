@@ -1,10 +1,11 @@
 from libprobe.asset import Asset
-from pyVmomi import vim  # type: ignore
+from libprobe.check import Check
+from pyVmomi import vim
 from ..utils import datetime_to_timestamp
 from ..vmwarequery import vmwarequery
 
 
-def on_runtime_info(obj):
+def on_runtime_info(obj: vim.host.RuntimeInfo) -> dict:
     # vim.host.Summary.RuntimeInfo
     return {
         'name': 'runtime',
@@ -19,7 +20,7 @@ def on_runtime_info(obj):
     }
 
 
-def on_quick_stats(obj):
+def on_quick_stats(obj: vim.host.Summary.QuickStats) -> dict:
     # vim.host.Summary.QuickStats
     return {
         'name': 'stats',
@@ -32,7 +33,7 @@ def on_quick_stats(obj):
     }
 
 
-def on_hardware_summary(obj):
+def on_hardware_summary(obj: vim.host.Summary.HardwareSummary) -> dict:
     # vim.host.Summary.HardwareSummary
     return {
         'name': 'hardware',
@@ -50,7 +51,7 @@ def on_hardware_summary(obj):
     }
 
 
-def on_about_info(obj):
+def on_about_info(obj: vim.AboutInfo) -> dict:
     # vim.AboutInfo
     return {
         'apiType': obj.apiType,  # str
@@ -71,7 +72,7 @@ def on_about_info(obj):
     }
 
 
-def on_config_summary(obj):
+def on_config_summary(obj: vim.host.Summary.ConfigSummary):
     # vim.host.Summary.ConfigSummary
     return {
         'faultToleranceEnabled': obj.faultToleranceEnabled,  # bool
@@ -82,15 +83,16 @@ def on_config_summary(obj):
     }
 
 
-def fmt_summary(summary) -> dict:
+def fmt_summary(summary: vim.host.Summary) -> dict:
     output = {}
     output['stats'] = [on_quick_stats(summary.quickStats)]
-    output['hardware'] = [on_hardware_summary(summary.hardware)]
+    output['hardware'] = [
+        on_hardware_summary(summary.hardware)]  # type: ignore
     output['hardwareOther'] = [
         {
             'name': item.identifierType.key,
             'value': item.identifierValue}
-        for item in summary.hardware.otherIdentifyingInfo
+        for item in summary.hardware.otherIdentifyingInfo  # type: ignore
     ]
     output['feature'] = [
         {
@@ -102,7 +104,7 @@ def fmt_summary(summary) -> dict:
     output['config'] = [on_config_summary(summary.config)]
     output['netstack'] = []
     output['nic'] = []
-    net_runtime_info = summary.runtime.networkRuntimeInfo
+    net_runtime_info = summary.runtime.networkRuntimeInfo  # type: ignore
     if net_runtime_info:
         for stackInfo in net_runtime_info.netStackInstanceRuntimeInfo:
             output['netstack'].append({
@@ -118,25 +120,28 @@ def fmt_summary(summary) -> dict:
                     'name': stackInfo.netStackInstanceKey + ':' + nic,
                     'nic': nic
                 })
-    output['runtime'] = [on_runtime_info(summary.runtime)]
+    output['runtime'] = [on_runtime_info(summary.runtime)]  # type: ignore
     return output
 
 
-async def check_host(
-        asset: Asset,
-        asset_config: dict,
-        check_config: dict) -> dict:
-    result = await vmwarequery(
-        asset,
-        asset_config,
-        check_config,
-        vim.HostSystem,
-        ['summary']
-    )
+class CheckHost(Check):
+    key = 'host'
+    unchanged_eol = 0
 
-    return {
-        tp_name: tp
-        for item in result
-        for prop in item.propSet
-        for tp_name, tp in fmt_summary(prop.val).items()
-    }
+    @staticmethod
+    async def run(asset: Asset, local_config: dict, config: dict) -> dict:
+
+        result = await vmwarequery(
+            asset,
+            local_config,
+            config,
+            vim.HostSystem,
+            ['summary']
+        )
+
+        return {
+            tp_name: tp
+            for item in result
+            for prop in item.propSet
+            for tp_name, tp in fmt_summary(prop.val).items()
+        }

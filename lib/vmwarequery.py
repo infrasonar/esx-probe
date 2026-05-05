@@ -4,7 +4,6 @@ from http.client import BadStatusLine
 from libprobe.asset import Asset
 from libprobe.exceptions import CheckException
 from pyVmomi import vim
-from typing import List, Type
 
 from . import DOCS_URL
 from .vmwareconn import get_content, get_data, drop_connnection
@@ -14,13 +13,13 @@ DEFAULT_INTERVAL = 300
 
 async def vmwarequery_content(
         asset: Asset,
-        asset_config: dict,
-        check_config: dict) -> vim.ServiceInstanceContent:
-    address = check_config.get('address')
+        local_config: dict,
+        config: dict) -> vim.ServiceInstanceContent:
+    address = config.get('address')
     if not address:
         address = asset.name
-    username = asset_config.get('username')
-    password = asset_config.get('password')
+    username = local_config.get('username')
+    password = local_config.get('password')
     if username is None or password is None:
         raise CheckException(
             'Missing credentials. Please refer to the following documentation'
@@ -60,15 +59,15 @@ async def vmwarequery_content(
 
 async def vmwarequery(
         asset: Asset,
-        asset_config: dict,
-        check_config: dict,
-        obj_type: Type[vim.ManagedEntity],
-        properties: List[str]) -> list:
-    address = check_config.get('address')
+        local_config: dict,
+        config: dict,
+        obj_type: type[vim.ManagedEntity],
+        properties: list[str]) -> list:
+    address = config.get('address')
     if not address:
         address = asset.name
-    username = asset_config.get('username')
-    password = asset_config.get('password')
+    username = local_config.get('username')
+    password = local_config.get('password')
     if username is None or password is None:
         raise CheckException(
             'Missing credentials. Please refer to the following documentation'

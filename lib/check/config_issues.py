@@ -1,9 +1,10 @@
 from libprobe.asset import Asset
-from pyVmomi import vim  # type: ignore
+from libprobe.check import Check
+from pyVmomi import vim
 from ..vmwarequery import vmwarequery
 
 
-def fmt_issue(issue) -> dict:
+def fmt_issue(issue: vim.event.EventEx) -> dict:
     # vim.event.EventEx
 
     severity = getattr(issue, 'severity', None)  # str/null
@@ -19,26 +20,29 @@ def fmt_issue(issue) -> dict:
     }
 
 
-async def check_config_issues(
-        asset: Asset,
-        asset_config: dict,
-        check_config: dict) -> dict:
-    result = await vmwarequery(
-        asset,
-        asset_config,
-        check_config,
-        vim.HostSystem,
-        ['configIssue'],
-    )
+class CheckConfigIssues(Check):
+    key = 'configIssues'
+    unchanged_eol = 14400
 
-    issues = [
-        fmt_issue(issue)
-        for item in result
-        for prop in item.propSet
-        for issue in prop.val
-        if isinstance(issue, vim.event.EventEx)
-    ]
+    @staticmethod
+    async def run(asset: Asset, local_config: dict, config: dict) -> dict:
 
-    return {
-        'configIssues': issues
-    }
+        result = await vmwarequery(
+            asset,
+            local_config,
+            config,
+            vim.HostSystem,
+            ['configIssue'],
+        )
+
+        issues = [
+            fmt_issue(issue)
+            for item in result
+            for prop in item.propSet
+            for issue in prop.val
+            if isinstance(issue, vim.event.EventEx)
+        ]
+
+        return {
+            'configIssues': issues
+        }
